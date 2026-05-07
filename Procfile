@@ -1,1 +1,1 @@
-web: gunicorn app_rastreamento:app --bind 0.0.0.0:$PORT --workers 2
+web: gunicorn app_rastreamento:app --bind 0.0.0.0:${PORT:-5000} --workers 1 --timeout 120
