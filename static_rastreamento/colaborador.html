@@ -238,17 +238,17 @@
             <div class="info-card">
                 <div class="info-title">📍 Informações da Linha</div>
                 <div class="info-item">
-                    <div class="info-item-icon">🅿️</div>
+                    <div class="info-item-icon">📍</div>
                     <div>
-                        <div class="info-item-label">Ponto de Origem</div>
+                        <div class="info-item-label">Meu Endereço de Embarque</div>
                         <div class="info-item-value" id="infoOrigem">—</div>
                     </div>
                 </div>
                 <div class="info-item">
                     <div class="info-item-icon">🏁</div>
                     <div>
-                        <div class="info-item-label">Destino</div>
-                        <div class="info-item-value">Kuhn Brasil — R. Arnô Pini, 1380</div>
+                        <div class="info-item-label">Destino Final</div>
+                        <div class="info-item-value" id="infoDestino">Kuhn Brasil — R. Arnô Pini, 1380</div>
                     </div>
                 </div>
             </div>
@@ -343,7 +343,50 @@
             document.getElementById('busParadaApp').textContent = `Parada ${_colab.ordem_embarque || '—'}`;
             document.getElementById('busHorarioIda').textContent = _colab.horario_saida ? _colab.horario_saida.substring(0,5) : '--:--';
             document.getElementById('busHorarioVolta').textContent = _colab.horario_saida_volta ? _colab.horario_saida_volta.substring(0,5) : '--:--';
-            document.getElementById('infoOrigem').textContent = _colab.ponto_origem || '—';
+
+            // Mostrar endereço do colaborador como ponto de embarque
+            const endColab = [_colab.logradouro, _colab.numero, _colab.bairro].filter(Boolean).join(', ');
+            document.getElementById('infoOrigem').textContent = endColab || _colab.ponto_origem || '—';
+
+            // Detectar IDA ou VOLTA automaticamente pelo horário atual
+            const agora = new Date();
+            const horaAtual = agora.getHours() * 60 + agora.getMinutes();
+            const horarioIda = _colab.horario_saida ? _colab.horario_saida.substring(0,5) : '06:30';
+            const horarioVolta = _colab.horario_saida_volta ? _colab.horario_saida_volta.substring(0,5) : '17:30';
+            const [hIda, mIda] = horarioIda.split(':').map(Number);
+            const [hVolta, mVolta] = horarioVolta.split(':').map(Number);
+            const minIda = hIda * 60 + mIda;
+            const minVolta = hVolta * 60 + mVolta;
+
+            // IDA: até 2h depois do horário de saída IDA
+            // VOLTA: a partir de 1h antes do horário de saída VOLTA
+            let sentidoAtual, sentidoBadge;
+            if (horaAtual >= minVolta - 60) {
+                sentidoAtual = 'volta';
+                sentidoBadge = `<span style="background:#2E3440;color:white;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;margin-left:8px;">🌆 VOLTA</span>`;
+            } else {
+                sentidoAtual = 'ida';
+                sentidoBadge = `<span style="background:#ED1C24;color:white;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;margin-left:8px;">🌅 IDA</span>`;
+            }
+            _colab._sentido = sentidoAtual;
+
+            // Atualizar badge no nome do ônibus
+            document.getElementById('busNomeApp').innerHTML = `🚌 ${_colab.onibus_nome} ${sentidoBadge}`;
+
+            // Próximo horário
+            const proximoHorario = sentidoAtual === 'ida' ? horarioIda : horarioVolta;
+            const proximoTexto = sentidoAtual === 'ida'
+                ? `🌅 IDA — Saída da garagem às ${horarioIda}`
+                : `🌆 VOLTA — Saída da Kuhn às ${horarioVolta}`;
+            document.getElementById('chegadaSub').textContent = proximoTexto;
+
+            // Atualizar destino conforme sentido
+            const destinoEl = document.getElementById('infoDestino');
+            if (destinoEl) {
+                destinoEl.textContent = sentidoAtual === 'ida'
+                    ? 'Kuhn Brasil — R. Arnô Pini, 1380'
+                    : (_colab.ponto_origem || 'Garagem do ônibus');
+            }
 
             // Horário estimado estático
             if (_colab.horario_saida && _colab.ordem_embarque) {
@@ -363,14 +406,16 @@
         }
 
         function inicializarMapa() {
+            // Coordenadas fixas da Kuhn Brasil
+            const KUHN_COORDS = { lat: -28.26012, lng: -52.39147 };
             _mapa = new google.maps.Map(document.getElementById('mapaColab'), {
-                center: { lat: -28.2576, lng: -52.4089 },
+                center: KUHN_COORDS,
                 zoom: 13, mapTypeControl: false, streetViewControl: false, fullscreenControl: false
             });
-            // Marcador Kuhn Brasil
+            // Marcador Kuhn Brasil — coordenadas fixas, nunca geocodificar
             new google.maps.Marker({
-                position: { lat: -28.2576, lng: -52.4089 },
-                map: _mapa, title: 'Kuhn Brasil',
+                position: KUHN_COORDS,
+                map: _mapa, title: 'Kuhn Brasil — R. Arnô Pini, 1380',
                 icon: { path: google.maps.SymbolPath.CIRCLE, fillColor:'#2E3440', fillOpacity:1, strokeColor:'#ED1C24', strokeWeight:3, scale:12 },
                 label: { text:'K', color:'white', fontSize:'9px', fontWeight:'bold' }
             });
@@ -436,13 +481,16 @@
         }
 
         function montarEnderecoColab(c) {
-            // Prioridade: CEP + número > logradouro + número > bairro
-            if (c.cep) {
-                const cep = c.cep.replace(/[^0-9]/g, '');
-                return `${cep}${c.numero ? ' ' + c.numero : ''}, Brasil`;
-            }
             if (c.logradouro) {
-                return `${c.logradouro}${c.numero ? ', ' + c.numero : ''}, ${c.cidade || 'Passo Fundo'}, RS, Brasil`;
+                const num = c.numero ? `, ${c.numero}` : '';
+                const cidade = c.cidade || 'Passo Fundo';
+                const cep = c.cep ? ` - ${c.cep}` : '';
+                return `${c.logradouro}${num}, ${cidade}, RS${cep}, Brasil`;
+            }
+            if (c.cep) {
+                const cepLimpo = c.cep.replace(/[^0-9]/g, '');
+                const cepFmt = cepLimpo.length === 8 ? `${cepLimpo.substring(0,5)}-${cepLimpo.substring(5)}` : cepLimpo;
+                return `${cepFmt}, ${c.cidade || 'Passo Fundo'}, RS, Brasil`;
             }
             if (c.bairro) return `${c.bairro}, ${c.cidade || 'Passo Fundo'}, RS, Brasil`;
             return `${c.ponto_origem || 'Passo Fundo'}, RS, Brasil`;

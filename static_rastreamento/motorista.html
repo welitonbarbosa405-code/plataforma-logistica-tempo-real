@@ -282,33 +282,45 @@ function confirmarEmbarque(colabId, btn) {
     document.getElementById('contadorPassageiros').textContent = `(${emb}/${total} embarcados)`;
 }
 
-// Monta o melhor endereço disponível — prioridade: CEP + número
+// Monta o melhor endereço para o Google Maps
 function melhorEndereco(p) {
-    if (p.cep) {
-        const cep = p.cep.replace(/\D/g, '');
-        const num = p.numero ? ` ${p.numero}` : '';
-        return `${cep}${num}, Brasil`;
-    }
+    const cidade = p.cidade || 'Passo Fundo';
+    // Prioridade 1: Logradouro + número + CEP + cidade (mais completo e assertivo)
     if (p.logradouro) {
         const num = p.numero ? `, ${p.numero}` : '';
-        const cidade = p.cidade || 'Passo Fundo';
-        return `${p.logradouro}${num}, ${cidade}, RS, Brasil`;
+        const cepLimpo = p.cep ? p.cep.replace(/[^0-9]/g, '') : '';
+        const cepFmt = cepLimpo.length === 8 ? ` - ${cepLimpo.substring(0,5)}-${cepLimpo.substring(5)}` : (p.cep ? ` - ${p.cep}` : '');
+        return `${p.logradouro}${num}, ${cidade}, RS${cepFmt}, Brasil`;
     }
-    if (p.bairro) return `${p.bairro}, ${p.cidade || 'Passo Fundo'}, RS, Brasil`;
+    // Prioridade 2: CEP formatado + cidade
+    if (p.cep) {
+        const cepLimpo = p.cep.replace(/[^0-9]/g, '');
+        const cepFmt = cepLimpo.length === 8 ? `${cepLimpo.substring(0,5)}-${cepLimpo.substring(5)}` : p.cep;
+        return `${cepFmt}, ${cidade}, RS, Brasil`;
+    }
+    // Prioridade 3: Bairro + cidade
+    if (p.bairro) return `${p.bairro}, ${cidade}, RS, Brasil`;
     return null;
 }
+
+// Coordenadas fixas da Kuhn Brasil
+const KUHN_END_MAPS = 'R. Arnô Pini, 1380, Invernadinha, Passo Fundo, RS, 99050-130, Brasil';
 
 function abrirRotaCompleta() {
     if (!_passageiros || _passageiros.length === 0) {
         alert('Nenhum passageiro cadastrado nesta linha.');
         return;
     }
-    const origem = encodeURIComponent((_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil');
+
+    const origemEnd = (_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil';
+    const origem = encodeURIComponent(origemEnd);
+
+    // Destino: IDA = Kuhn Brasil | VOLTA = garagem
     const destino = _sentido === 'ida'
-        ? encodeURIComponent('99050130, 1380, Brasil')
+        ? encodeURIComponent(KUHN_END_MAPS)
         : origem;
 
-    // Waypoints com CEP + número (máx 9 no plano gratuito)
+    // Waypoints com endereço completo (logradouro + número + cidade + CEP)
     const waypoints = _passageiros
         .map(p => melhorEndereco(p))
         .filter(Boolean)
