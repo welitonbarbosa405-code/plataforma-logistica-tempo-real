@@ -127,14 +127,18 @@ def sincronizar():
         conn.commit()
         conn.close()
 
+        print(f'[SYNC OK] {len(onibus_list)} onibus, {len(colabs)} colaboradores')
         return jsonify({
-            'message': 'Sincronização realizada com sucesso',
+            'message': 'Sincronizacao realizada com sucesso',
             'onibus': len(onibus_list),
             'colaboradores': len(colabs)
         }), 200
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        print(f'[SYNC ERRO] {str(e)}')
+        print(traceback.format_exc())
+        return jsonify({'error': str(e), 'traceback': traceback.format_exc()}), 500
 
 
 # ========== LOGIN MOTORISTA ==========
