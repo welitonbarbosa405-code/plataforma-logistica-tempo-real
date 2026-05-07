@@ -215,6 +215,9 @@ async function iniciarViagem(sentido) {
                     <div><div style="font-weight:700;color:#0F6E56;font-size:15px;">Viagem em andamento</div>
                     <div style="font-size:12px;color:#888;">${st} · Saída: ${hr}</div></div>
                 </div>
+                <button onclick="abrirRotaCompleta()" style="width:100%;padding:13px;background:#185FA5;color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">
+                    🗺️ Ver Rota Completa no Google Maps
+                </button>
                 <button class="btn-encerrar" onclick="encerrarViagem(false)">⏹ Encerrar Viagem</button>
             </div>`;
         await carregarPassageiros(sentido);
@@ -260,7 +263,10 @@ async function carregarPassageiros(sentido) {
                     <div class="pax-nome">${p.nome}</div>
                     <div class="pax-detalhe">Turno ${p.turno||'—'} &nbsp;·&nbsp; 🕐 ~${hrEst}</div>
                 </div>
-                <button class="btn-embarcar btn-pendente" id="btn-${p.id}" onclick="confirmarEmbarque(${p.id}, this)">Embarcar</button>
+                <div style="display:flex;gap:6px;flex-shrink:0;">
+                    <button onclick="navegarAtePassageiro(${p.id})" style="padding:8px 10px;background:#E6F1FB;color:#185FA5;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">🗺️ Ir</button>
+                    <button class="btn-embarcar btn-pendente" id="btn-${p.id}" onclick="confirmarEmbarque(${p.id}, this)">Embarcar</button>
+                </div>
             </div>`;
         }).join('');
     } catch(e) { lista.innerHTML = '<div class="sem-dados">Erro ao carregar passageiros</div>'; }
@@ -274,6 +280,55 @@ function confirmarEmbarque(colabId, btn) {
     if (numEl) numEl.className = 'pax-num ok';
     const total = _passageiros.length, emb = Object.keys(_embarcados).length;
     document.getElementById('contadorPassageiros').textContent = `(${emb}/${total} embarcados)`;
+}
+
+// Monta o melhor endereço disponível — prioridade: CEP + número
+function melhorEndereco(p) {
+    if (p.cep) {
+        const cep = p.cep.replace(/\D/g, '');
+        const num = p.numero ? ` ${p.numero}` : '';
+        return `${cep}${num}, Brasil`;
+    }
+    if (p.logradouro) {
+        const num = p.numero ? `, ${p.numero}` : '';
+        const cidade = p.cidade || 'Passo Fundo';
+        return `${p.logradouro}${num}, ${cidade}, RS, Brasil`;
+    }
+    if (p.bairro) return `${p.bairro}, ${p.cidade || 'Passo Fundo'}, RS, Brasil`;
+    return null;
+}
+
+function abrirRotaCompleta() {
+    if (!_passageiros || _passageiros.length === 0) {
+        alert('Nenhum passageiro cadastrado nesta linha.');
+        return;
+    }
+    const origem = encodeURIComponent((_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil');
+    const destino = _sentido === 'ida'
+        ? encodeURIComponent('99050130, 1380, Brasil')
+        : origem;
+
+    // Waypoints com CEP + número (máx 9 no plano gratuito)
+    const waypoints = _passageiros
+        .map(p => melhorEndereco(p))
+        .filter(Boolean)
+        .slice(0, 9)
+        .map(e => encodeURIComponent(e))
+        .join('|');
+
+    let url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving`;
+    if (waypoints) url += `&waypoints=${waypoints}`;
+    window.open(url, '_blank');
+}
+
+function navegarAtePassageiro(colabId) {
+    const p = _passageiros.find(p => p.id === colabId);
+    if (!p) return;
+    const end = melhorEndereco(p);
+    if (!end) { alert('Endereço não cadastrado para este colaborador.'); return; }
+    const dest = encodeURIComponent(end);
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${dest}&travelmode=driving`;
+    window.open(url, '_blank');
 }
 
 const salvo = localStorage.getItem('motoristaLogado');

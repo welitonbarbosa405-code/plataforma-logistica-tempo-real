@@ -435,11 +435,23 @@
             } catch(e) { console.warn('Erro ao monitorar:', e); }
         }
 
+        function montarEnderecoColab(c) {
+            // Prioridade: CEP + número > logradouro + número > bairro
+            if (c.cep) {
+                const cep = c.cep.replace(/[^0-9]/g, '');
+                return `${cep}${c.numero ? ' ' + c.numero : ''}, Brasil`;
+            }
+            if (c.logradouro) {
+                return `${c.logradouro}${c.numero ? ', ' + c.numero : ''}, ${c.cidade || 'Passo Fundo'}, RS, Brasil`;
+            }
+            if (c.bairro) return `${c.bairro}, ${c.cidade || 'Passo Fundo'}, RS, Brasil`;
+            return `${c.ponto_origem || 'Passo Fundo'}, RS, Brasil`;
+        }
+
         function calcularDistancia(posOnibus) {
-            if (typeof google === 'undefined' || !_colab.ponto_origem) return;
+            if (typeof google === 'undefined') return;
             const service = new google.maps.DistanceMatrixService();
-            // Usar ordem de embarque para estimar parada
-            const endDest = `${_colab.ponto_origem}, Passo Fundo, RS, Brasil`;
+            const endDest = montarEnderecoColab(_colab);
             service.getDistanceMatrix({
                 origins: [new google.maps.LatLng(posOnibus.lat, posOnibus.lng)],
                 destinations: [endDest],

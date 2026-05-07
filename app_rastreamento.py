@@ -46,7 +46,12 @@ def init_db():
             ordem_embarque INTEGER,
             horario_estimado TEXT,
             is_motorista INTEGER DEFAULT 0,
-            onibus_motorista_id INTEGER
+            onibus_motorista_id INTEGER,
+            logradouro TEXT,
+            numero TEXT,
+            bairro TEXT,
+            cep TEXT,
+            cidade TEXT
         )
     ''')
 
@@ -124,11 +129,13 @@ def sincronizar():
         colabs = data.get('colaboradores', [])
         for c in colabs:
             cursor.execute('''
-                INSERT OR REPLACE INTO colaboradores (id, matricula, nome, turno, onibus_id, ordem_embarque, horario_estimado, is_motorista, onibus_motorista_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT OR REPLACE INTO colaboradores (id, matricula, nome, turno, onibus_id, ordem_embarque, horario_estimado, is_motorista, onibus_motorista_id, logradouro, numero, bairro, cep, cidade)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (c['id'], c['matricula'], c['nome'], c.get('turno', 'Manhã'),
                   c.get('onibus_id'), c.get('ordem_embarque'), c.get('horario_estimado'),
-                  c.get('is_motorista', 0), c.get('onibus_motorista_id')))
+                  c.get('is_motorista', 0), c.get('onibus_motorista_id'),
+                  c.get('logradouro'), c.get('numero'), c.get('bairro'),
+                  c.get('cep'), c.get('cidade')))
 
         conn.commit()
         conn.close()
@@ -373,7 +380,8 @@ def get_passageiros(onibus_id):
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute('''
-            SELECT id, nome, matricula, turno, ordem_embarque, horario_estimado
+            SELECT id, nome, matricula, turno, ordem_embarque, horario_estimado,
+                   logradouro, numero, bairro, cep, cidade
             FROM colaboradores
             WHERE onibus_id = ?
             ORDER BY ordem_embarque ASC, nome ASC
