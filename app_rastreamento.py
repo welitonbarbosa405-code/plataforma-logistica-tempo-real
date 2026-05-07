@@ -102,6 +102,9 @@ def sincronizar():
         if token != SYNC_TOKEN:
             return jsonify({'error': 'Token inválido'}), 401
 
+        # Garantir que o banco está inicializado
+        init_db()
+
         conn = get_db()
         cursor = conn.cursor()
 
@@ -374,8 +377,15 @@ def health():
     return jsonify({'status': 'ok', 'timestamp': datetime.now().isoformat()})
 
 
-if __name__ == '__main__':
+# Inicializar banco ao carregar (Gunicorn não passa pelo __main__)
+try:
     init_db()
+    print('Banco de rastreamento inicializado!')
+except Exception as e:
+    print(f'Erro ao inicializar banco: {e}')
+
+if __name__ == '__main__':
+    pass  # init_db já foi chamado acima
     port = int(os.environ.get('PORT', 5000))
     print(f'Servidor de rastreamento rodando na porta {port}')
     app.run(host='0.0.0.0', port=port, debug=False)
