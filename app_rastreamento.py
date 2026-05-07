@@ -44,7 +44,9 @@ def init_db():
             turno TEXT DEFAULT 'Manhã',
             onibus_id INTEGER,
             ordem_embarque INTEGER,
-            horario_estimado TEXT
+            horario_estimado TEXT,
+            is_motorista INTEGER DEFAULT 0,
+            onibus_motorista_id INTEGER
         )
     ''')
 
@@ -122,10 +124,11 @@ def sincronizar():
         colabs = data.get('colaboradores', [])
         for c in colabs:
             cursor.execute('''
-                INSERT OR REPLACE INTO colaboradores (id, matricula, nome, turno, onibus_id, ordem_embarque, horario_estimado)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT OR REPLACE INTO colaboradores (id, matricula, nome, turno, onibus_id, ordem_embarque, horario_estimado, is_motorista, onibus_motorista_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (c['id'], c['matricula'], c['nome'], c.get('turno', 'Manhã'),
-                  c.get('onibus_id'), c.get('ordem_embarque'), c.get('horario_estimado')))
+                  c.get('onibus_id'), c.get('ordem_embarque'), c.get('horario_estimado'),
+                  c.get('is_motorista', 0), c.get('onibus_motorista_id')))
 
         conn.commit()
         conn.close()
@@ -160,17 +163,19 @@ def motorista_login():
             SELECT c.*, o.nome as onibus_nome, o.placa, o.horario_saida,
                    o.horario_saida_volta, o.ponto_origem, o.capacidade
             FROM colaboradores c
-            LEFT JOIN onibus o ON o.id = c.onibus_id
+            LEFT JOIN onibus o ON o.id = c.onibus_motorista_id
             WHERE c.matricula = ?
         ''', (matricula,))
         colab = cursor.fetchone()
 
-        # Verificar se é motorista (tem ônibus vinculado)
         if not colab:
             return jsonify({'error': 'Matrícula não encontrada'}), 404
 
-        if not colab['onibus_id']:
-            return jsonify({'error': 'Você não está vinculado a nenhuma linha'}), 400
+        if not colab['is_motorista']:
+            return jsonify({'error': 'Este colaborador não está cadastrado como motorista. Contate o RH.'}), 400
+
+        if not colab['onibus_motorista_id']:
+            return jsonify({'error': 'Motorista não está vinculado a nenhum ônibus. Contate o RH.'}), 400
 
         conn.close()
         return jsonify(dict(colab)), 200
@@ -354,6 +359,28 @@ def viagem_ativa(onibus_id):
         dados = dict(row)
         dados['ativa'] = True
         return jsonify(dados), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ========== PASSAGEIROS POR ÔNIBUS ==========
+
+@app.route('/api/passageiros/<int:onibus_id>', methods=['GET'])
+def get_passageiros(onibus_id):
+    """Retorna lista de passageiros de um ônibus para o app do motorista"""
+    try:
+        init_db()
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT id, nome, matricula, turno, ordem_embarque, horario_estimado
+            FROM colaboradores
+            WHERE onibus_id = ?
+            ORDER BY ordem_embarque ASC, nome ASC
+        ''', (onibus_id,))
+        rows = [dict(r) for r in cursor.fetchall()]
+        conn.close()
+        return jsonify(rows), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
