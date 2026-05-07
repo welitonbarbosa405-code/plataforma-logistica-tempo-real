@@ -109,16 +109,8 @@ def sincronizar():
         onibus_list = data.get('onibus', [])
         for bus in onibus_list:
             cursor.execute('''
-                INSERT INTO onibus (id, nome, placa, horario_saida, horario_saida_volta, ponto_origem, capacidade, ativo)
+                INSERT OR REPLACE INTO onibus (id, nome, placa, horario_saida, horario_saida_volta, ponto_origem, capacidade, ativo)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(id) DO UPDATE SET
-                    nome=excluded.nome,
-                    placa=excluded.placa,
-                    horario_saida=excluded.horario_saida,
-                    horario_saida_volta=excluded.horario_saida_volta,
-                    ponto_origem=excluded.ponto_origem,
-                    capacidade=excluded.capacidade,
-                    ativo=excluded.ativo
             ''', (bus['id'], bus['nome'], bus['placa'],
                   bus.get('horario_saida', ''), bus.get('horario_saida_volta', '17:30'),
                   bus.get('ponto_origem', ''), bus.get('capacidade', 40), bus.get('ativo', 1)))
@@ -127,15 +119,8 @@ def sincronizar():
         colabs = data.get('colaboradores', [])
         for c in colabs:
             cursor.execute('''
-                INSERT INTO colaboradores (id, matricula, nome, turno, onibus_id, ordem_embarque, horario_estimado)
+                INSERT OR REPLACE INTO colaboradores (id, matricula, nome, turno, onibus_id, ordem_embarque, horario_estimado)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(id) DO UPDATE SET
-                    matricula=excluded.matricula,
-                    nome=excluded.nome,
-                    turno=excluded.turno,
-                    onibus_id=excluded.onibus_id,
-                    ordem_embarque=excluded.ordem_embarque,
-                    horario_estimado=excluded.horario_estimado
             ''', (c['id'], c['matricula'], c['nome'], c.get('turno', 'Manhã'),
                   c.get('onibus_id'), c.get('ordem_embarque'), c.get('horario_estimado')))
 
@@ -242,7 +227,7 @@ def receber_gps():
                 velocidade=excluded.velocidade,
                 precisao=excluded.precisao,
                 em_rota=1,
-                atualizado_em=excluded.atualizado_em
+                atualizado_em=datetime('now', 'localtime')
         ''', (onibus_id, lat, lng,
               data.get('velocidade', 0), data.get('precisao', 0)))
         conn.commit()
