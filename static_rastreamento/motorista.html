@@ -182,7 +182,10 @@ function pararGPS() {
     atualizarGPSBar(false, 'GPS parado');
 }
 
+let _ultimaPosicao = null; // Guarda sempre a última posição GPS
+
 async function onGPSRecebido(pos) {
+    _ultimaPosicao = pos; // Salvar posição atual
     atualizarGPSBar(true, `GPS ativo — precisão ${pos.coords.accuracy.toFixed(0)}m`);
     if (!_viagemAtiva || !_motorista?.onibus_motorista_id) return;
     try {
@@ -326,28 +329,32 @@ function abrirRotaCompleta() {
         .map(e => encodeURIComponent(e))
         .join('|');
 
-    // Tentar usar GPS atual do motorista como origem
-    if (navigator.geolocation) {
+    // Usar posição GPS já monitorada (mais rápido e confiável)
+    let origem;
+    if (_ultimaPosicao) {
+        // GPS já ativo — usar posição atual diretamente
+        origem = encodeURIComponent(`${_ultimaPosicao.coords.latitude},${_ultimaPosicao.coords.longitude}`);
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving${waypoints ? '&waypoints=' + waypoints : ''}`;
+        window.open(url, '_blank');
+    } else if (navigator.geolocation) {
+        // GPS ainda não capturou — tentar agora
         navigator.geolocation.getCurrentPosition(
             pos => {
-                const origem = encodeURIComponent(`${pos.coords.latitude},${pos.coords.longitude}`);
-                let url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving`;
-                if (waypoints) url += `&waypoints=${waypoints}`;
+                origem = encodeURIComponent(`${pos.coords.latitude},${pos.coords.longitude}`);
+                const url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving${waypoints ? '&waypoints=' + waypoints : ''}`;
                 window.open(url, '_blank');
             },
             () => {
-                // Fallback: usar garagem como origem
-                const origem = encodeURIComponent((_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil');
-                let url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving`;
-                if (waypoints) url += `&waypoints=${waypoints}`;
+                // Fallback final: garagem
+                origem = encodeURIComponent((_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil');
+                const url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving${waypoints ? '&waypoints=' + waypoints : ''}`;
                 window.open(url, '_blank');
             },
             { enableHighAccuracy: true, timeout: 5000 }
         );
     } else {
-        const origem = encodeURIComponent((_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil');
-        let url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving`;
-        if (waypoints) url += `&waypoints=${waypoints}`;
+        origem = encodeURIComponent((_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil');
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving${waypoints ? '&waypoints=' + waypoints : ''}`;
         window.open(url, '_blank');
     }
 }
