@@ -407,7 +407,7 @@
 
         function inicializarMapa() {
             // Coordenadas fixas da Kuhn Brasil
-            const KUHN_COORDS = { lat: -28.26012, lng: -52.39147 };
+            const KUHN_COORDS = { lat: -28.2492, lng: -52.3891 }; // R. Arnô Pini, 1380 - Invernadinha
             _mapa = new google.maps.Map(document.getElementById('mapaColab'), {
                 center: KUHN_COORDS,
                 zoom: 13, mapTypeControl: false, streetViewControl: false, fullscreenControl: false
@@ -481,40 +481,86 @@
         }
 
         function montarEnderecoColab(c) {
+            const cidade = c.cidade || 'Passo Fundo';
+            // Prioridade 1: Logradouro + número + CEP + cidade (mais assertivo)
             if (c.logradouro) {
                 const num = c.numero ? `, ${c.numero}` : '';
-                const cidade = c.cidade || 'Passo Fundo';
-                const cep = c.cep ? ` - ${c.cep}` : '';
-                return `${c.logradouro}${num}, ${cidade}, RS${cep}, Brasil`;
+                const cepLimpo = c.cep ? c.cep.replace(/[^0-9]/g, '') : '';
+                const cepFmt = cepLimpo.length === 8
+                    ? ` - ${cepLimpo.substring(0,5)}-${cepLimpo.substring(5)}`
+                    : (c.cep ? ` - ${c.cep}` : '');
+                return `${c.logradouro}${num}, ${cidade}, RS${cepFmt}, Brasil`;
             }
+            // Prioridade 2: CEP formatado + cidade
             if (c.cep) {
                 const cepLimpo = c.cep.replace(/[^0-9]/g, '');
-                const cepFmt = cepLimpo.length === 8 ? `${cepLimpo.substring(0,5)}-${cepLimpo.substring(5)}` : cepLimpo;
-                return `${cepFmt}, ${c.cidade || 'Passo Fundo'}, RS, Brasil`;
+                const cepFmt = cepLimpo.length === 8
+                    ? `${cepLimpo.substring(0,5)}-${cepLimpo.substring(5)}`
+                    : c.cep;
+                return `${cepFmt}, ${cidade}, RS, Brasil`;
             }
-            if (c.bairro) return `${c.bairro}, ${c.cidade || 'Passo Fundo'}, RS, Brasil`;
-            return `${c.ponto_origem || 'Passo Fundo'}, RS, Brasil`;
+            // Prioridade 3: Bairro + cidade
+            if (c.bairro) return `${c.bairro}, ${cidade}, RS, Brasil`;
+            return null;
         }
 
         function calcularDistancia(posOnibus) {
             if (typeof google === 'undefined') return;
             const service = new google.maps.DistanceMatrixService();
+
+            // Montar destino do colaborador com melhor endereço disponível
             const endDest = montarEnderecoColab(_colab);
+            if (!endDest) return;
+
             service.getDistanceMatrix({
                 origins: [new google.maps.LatLng(posOnibus.lat, posOnibus.lng)],
                 destinations: [endDest],
-                travelMode: google.maps.TravelMode.DRIVING, region: 'BR'
+                travelMode: google.maps.TravelMode.DRIVING,
+                region: 'BR'
             }, (result, status) => {
-                if (status === 'OK' && result.rows[0].elements[0].status === 'OK') {
-                    const el = result.rows[0].elements[0];
-                    const minutos = Math.round(el.duration.value / 60);
-                    const distKm = (el.distance.value / 1000).toFixed(1);
-                    const agora = new Date();
-                    agora.setMinutes(agora.getMinutes() + minutos + (_colab.ordem_embarque || 1) * 3);
-                    const chegada = agora.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
-                    document.getElementById('chegadaHora').textContent = chegada;
-                    document.getElementById('chegadaSub').textContent = `~${minutos + (_colab.ordem_embarque||1)*3} min — ${distKm} km`;
+                if (status !== 'OK' || !result.rows[0] || result.rows[0].elements[0].status !== 'OK') {
+                    // Fallback: tentar com coordenadas do colaborador se tiver
+                    return;
                 }
+
+                const el = result.rows[0].elements[0];
+                const segundos = el.duration.value;
+                const distKm = (el.distance.value / 1000).toFixed(1);
+
+                // Calcular tempo considerando paradas anteriores
+                // Cada parada antes do colaborador adiciona ~2 minutos de embarque
+                const ordemColab = _colab.ordem_embarque || 1;
+                const paradasAntes = Math.max(0, ordemColab - 1);
+                const tempoParadas = paradasAntes * 2; // 2 min por parada anterior
+                const totalMinutos = Math.round(segundos / 60) + tempoParadas;
+
+                // Calcular horário de chegada
+                const agora = new Date();
+                const chegadaDate = new Date(agora.getTime() + totalMinutos * 60000);
+                const chegada = chegadaDate.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+
+                // Atualizar UI
+                document.getElementById('chegadaHora').textContent = chegada;
+
+                // Texto descritivo
+                let textoTempo;
+                if (totalMinutos <= 1) {
+                    textoTempo = 'Chegando agora!';
+                    document.getElementById('chegadaHora').style.animation = 'pulse 1s infinite';
+                } else if (totalMinutos < 60) {
+                    textoTempo = `~${totalMinutos} min — ${distKm} km`;
+                } else {
+                    const h = Math.floor(totalMinutos / 60);
+                    const m = totalMinutos % 60;
+                    textoTempo = `~${h}h ${m}min — ${distKm} km`;
+                }
+
+                // Mostrar sentido atual
+                const sentidoTexto = _colab._sentido === 'volta'
+                    ? `🌆 VOLTA — Saída da Kuhn às ${_colab.horario_saida_volta ? _colab.horario_saida_volta.substring(0,5) : '--:--'}`
+                    : `🌅 IDA — Saída da garagem às ${_colab.horario_saida ? _colab.horario_saida.substring(0,5) : '--:--'}`;
+
+                document.getElementById('chegadaSub').textContent = `${textoTempo} · ${sentidoTexto}`;
             });
         }
 

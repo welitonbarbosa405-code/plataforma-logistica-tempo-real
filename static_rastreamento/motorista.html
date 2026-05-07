@@ -312,15 +312,13 @@ function abrirRotaCompleta() {
         return;
     }
 
-    const origemEnd = (_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil';
-    const origem = encodeURIComponent(origemEnd);
-
     // Destino: IDA = Kuhn Brasil | VOLTA = garagem
-    const destino = _sentido === 'ida'
-        ? encodeURIComponent(KUHN_END_MAPS)
-        : origem;
+    const destinoEnd = _sentido === 'ida'
+        ? KUHN_END_MAPS
+        : (_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil';
+    const destino = encodeURIComponent(destinoEnd);
 
-    // Waypoints com endereço completo (logradouro + número + cidade + CEP)
+    // Waypoints com endereço completo
     const waypoints = _passageiros
         .map(p => melhorEndereco(p))
         .filter(Boolean)
@@ -328,9 +326,30 @@ function abrirRotaCompleta() {
         .map(e => encodeURIComponent(e))
         .join('|');
 
-    let url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving`;
-    if (waypoints) url += `&waypoints=${waypoints}`;
-    window.open(url, '_blank');
+    // Tentar usar GPS atual do motorista como origem
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                const origem = encodeURIComponent(`${pos.coords.latitude},${pos.coords.longitude}`);
+                let url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving`;
+                if (waypoints) url += `&waypoints=${waypoints}`;
+                window.open(url, '_blank');
+            },
+            () => {
+                // Fallback: usar garagem como origem
+                const origem = encodeURIComponent((_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil');
+                let url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving`;
+                if (waypoints) url += `&waypoints=${waypoints}`;
+                window.open(url, '_blank');
+            },
+            { enableHighAccuracy: true, timeout: 5000 }
+        );
+    } else {
+        const origem = encodeURIComponent((_motorista.ponto_origem || 'Passo Fundo, RS') + ', Brasil');
+        let url = `https://www.google.com/maps/dir/?api=1&origin=${origem}&destination=${destino}&travelmode=driving`;
+        if (waypoints) url += `&waypoints=${waypoints}`;
+        window.open(url, '_blank');
+    }
 }
 
 function navegarAtePassageiro(colabId) {
