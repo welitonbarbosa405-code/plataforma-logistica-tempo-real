@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roteirização de Colaboradores - Kuhn Brasil</title>
+    <link rel="stylesheet" href="/roteirizacao/styles.css">
+    <link rel="stylesheet" href="/roteirizacao/roteirizacao.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK5tNlfXqF1bin7urWetpudnIj7lKzl-0&libraries=geometry,places,visualization&language=pt-BR"></script>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo-group">
+                    <img src="/img/logo_kuhn.png" alt="Logo Kuhn" class="logo-kuhn-header">
+                </div>
+                <div class="header-title">
+                    <span class="header-subtitle">Roteirização de Colaboradores</span>
+                    <strong class="header-company">Kuhn Brasil</strong>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-btn nav-btn--tab active" onclick="openTab('dashboard', this)">📊 Dashboard</button>
+                <button class="nav-btn nav-btn--tab" onclick="openTab('onibus', this)">🚌 Ônibus</button>
+                <button class="nav-btn nav-btn--tab" onclick="openTab('colaboradores', this)">👥 Colaboradores</button>
+                <button class="nav-btn nav-btn--tab" onclick="openTab('rotas', this)">🗺️ Rotas</button>
+                <button class="nav-btn nav-btn--tab" onclick="openTab('cadastrar', this)">➕ Cadastrar</button>
+                <button class="nav-btn nav-btn--tab" onclick="openTab('autoRoteirizar', this)">✨ Auto Roteirizar</button>
+                <button id="btnUsuarios" class="nav-btn nav-btn--tab" style="display:none;" onclick="openTab('usuarios', this)">👤 Usuários</button>
+                <button class="nav-btn nav-btn--tab" onclick="irParaPortaria()">🔒 Portaria</button>
+                <button id="btnLogout" class="nav-btn nav-btn--logout">Sair</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- ===== DASHBOARD ===== -->
+        <div id="dashboard" class="tab-content active">
+            <div class="dashboard-metrics" style="margin-top:20px;">
+                <div class="metric-card">
+                    <div class="metric-icon">👥</div>
+                    <div class="metric-info">
+                        <div class="metric-value" id="metricTotalColabs">0</div>
+                        <div class="metric-label">Total Colaboradores</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">🚌</div>
+                    <div class="metric-info">
+                        <div class="metric-value" id="metricTotalOnibus">0</div>
+                        <div class="metric-label">Ônibus Cadastrados</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">✅</div>
+                    <div class="metric-info">
+                        <div class="metric-value" id="metricAlocados">0</div>
+                        <div class="metric-label">Colaboradores Alocados</div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-icon">⚠️</div>
+                    <div class="metric-info">
+                        <div class="metric-value" id="metricSemRota" style="color:#ED1C24">0</div>
+                        <div class="metric-label">Sem Rota Definida</div>
+                    </div>
+                </div>
+            </div>
+            <div id="dashAlerts" style="margin:0 40px 20px 40px;display:flex;flex-direction:column;gap:8px;"></div>
+            <div class="dash-grid-main">
+                <div class="dash-card dash-card-mapa">
+                    <div class="dash-card-title">🗺️ Todas as Rotas — Visão Geral</div>
+                    <div id="dashMapaGeral" style="height:380px;border-radius:10px;overflow:hidden;border:1px solid #E8E8E8;"></div>
+                    <div id="dashMapaLegenda" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:12px;"></div>
+                </div>
+                <div class="dash-grid-charts">
+                    <div class="dash-card">
+                        <div class="dash-card-title">🕐 Distribuição por Turno</div>
+                        <div style="height:180px;position:relative;">
+                            <canvas id="chartTurnos"></canvas>
+                        </div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-title">📊 Ocupação por Linha (%)</div>
+                        <div style="height:180px;position:relative;">
+                            <canvas id="chartOcupacao"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dash-grid-second">
+                <div class="dash-card">
+                    <div class="dash-card-title">🏘️ Colaboradores por Bairro</div>
+                    <div style="height:260px;position:relative;">
+                        <canvas id="chartBairros"></canvas>
+                    </div>
+                </div>
+                <div class="dash-card">
+                    <div class="dash-card-title">🌡️ Mapa de Calor — Concentração de Colaboradores</div>
+                    <div id="dashHeatmap" style="height:280px;border-radius:10px;overflow:hidden;border:1px solid #E8E8E8;"></div>
+                </div>
+            </div>
+            <div class="dash-card" style="margin:0 40px 20px 40px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                    <div class="dash-card-title" style="margin-bottom:0;">📋 Resumo Executivo por Linha</div>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn btn-secondary" style="font-size:12px;padding:6px 14px;" onclick="exportarResumoPDF()">📄 Exportar PDF</button>
+                        <button class="btn btn-success" style="font-size:12px;padding:6px 14px;" onclick="exportarResumoExcel()">📊 Exportar Excel</button>
+                    </div>
+                </div>
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:linear-gradient(135deg,#ED1C24,#2E3440);color:white;">
+                            <th style="padding:10px 12px;text-align:left;font-size:12px;">Linha</th>
+                            <th style="padding:10px 12px;text-align:left;font-size:12px;">Placa</th>
+                            <th style="padding:10px 12px;text-align:left;font-size:12px;">Tipo</th>
+                            <th style="padding:10px 12px;text-align:center;font-size:12px;">Passageiros</th>
+                            <th style="padding:10px 12px;text-align:center;font-size:12px;">Ocupação</th>
+                            <th style="padding:10px 12px;text-align:center;font-size:12px;">Status</th>
+                            <th style="padding:10px 12px;text-align:center;font-size:12px;">🌅 IDA</th>
+                            <th style="padding:10px 12px;text-align:center;font-size:12px;">🌆 VOLTA</th>
+                            <th style="padding:10px 12px;text-align:center;font-size:12px;">📏 Km/dia</th>
+                            <th style="padding:10px 12px;text-align:center;font-size:12px;">⏱️ Tempo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyResumoExecutivo"></tbody>
+                </table>
+                <div style="font-size:11px;color:#4A4A4A;margin-top:8px;">
+                    * Km/dia calculado pelo Google Maps (IDA + VOLTA). Custo estimado baseado em consumo médio.
+                </div>
+            </div>
+            <div class="rota-section-header">
+                <h3>🚌 Ocupação por Linha</h3>
+            </div>
+            <div id="dashboardOnibus" class="rota-cards-grid"></div>
+            <div id="alertaSemOnibus" class="alerta-card" style="display:none;">
+                <h3>⚠️ Colaboradores sem ônibus definido</h3>
+                <div id="listaSemOnibus"></div>
+            </div>
+        </div>
+
+        <!-- ===== ÔNIBUS ===== -->
+        <div id="onibus" class="tab-content">
+            <div class="stats-cards" style="margin:20px 40px 15px 40px;">
+                <div class="stat-card">
+                    <div class="stat-icon">🚌</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statTotalOnibus">0</div>
+                        <div class="stat-label">Total de Ônibus</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💺</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statTotalVagas">0</div>
+                        <div class="stat-label">Total de Vagas</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statVagasOcupadas">0</div>
+                        <div class="stat-label">Vagas Ocupadas</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🟢</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statVagasLivres">0</div>
+                        <div class="stat-label">Vagas Livres</div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <h2>🚌 Ônibus Cadastrados</h2>
+                <div class="search-box">
+                    <input type="text" id="searchOnibus" placeholder="Buscar por nome, placa..." onkeyup="filtrarTabelaGenerica('tbodyOnibus', this.value)">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Linha</th>
+                            <th>Placa</th>
+                            <th>Tipo</th>
+                            <th>Capacidade</th>
+                            <th>Ocupação</th>
+                            <th>🏘️ Bairros Atendidos</th>
+                            <th>Ponto de Origem</th>
+                            <th>Horário Saída</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyOnibus"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== COLABORADORES ===== -->
+        <div id="colaboradores" class="tab-content">
+            <div class="stats-cards" style="margin:20px 40px 15px 40px;">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statTotalColabs">0</div>
+                        <div class="stat-label">Total Colaboradores</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statColabsAlocados">0</div>
+                        <div class="stat-label">Alocados</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statColabsSemBus">0</div>
+                        <div class="stat-label">Sem Ônibus</div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <h2>👥 Colaboradores Cadastrados</h2>
+                <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:center;">
+                    <div class="search-box" style="flex:1;min-width:220px;margin-bottom:0;">
+                        <input type="text" id="searchColabs" placeholder="Buscar por nome, matrícula, bairro..." onkeyup="filtrarColaboradores()">
+                    </div>
+                    <select id="filtroTurno" onchange="filtrarColaboradores()" class="rota-select-filter">
+                        <option value="">Todos os turnos</option>
+                        <option value="Manhã">Manhã</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noite">Noite</option>
+                    </select>
+                    <select id="filtroOnibusColab" onchange="filtrarColaboradores()" class="rota-select-filter">
+                        <option value="">Todos os ônibus</option>
+                        <option value="sem">Sem ônibus</option>
+                    </select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Matrícula</th>
+                            <th>Nome</th>
+                            <th>Endereço</th>
+                            <th>Bairro</th>
+                            <th>Turno</th>
+                            <th>Setor</th>
+                            <th>Ônibus / Linha</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyColaboradores"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===== ROTAS ===== -->
+        <div id="rotas" class="tab-content">
+            <div class="dashboard-header" style="margin:20px 40px;">
+                <h1>🗺️ Rotas Geradas Automaticamente</h1>
+                <p>Kuhn Brasil — R. Arnô Pini, 1380 - Invernadinha, Passo Fundo - RS</p>
+            </div>
+            <div style="padding:0 40px;margin-bottom:16px;display:flex;gap:10px;">
+                <button id="btnIda" class="btn-sentido btn-sentido-ativo" onclick="setSentido('ida')">
+                    🌅 IDA — Para a Kuhn Brasil
+                </button>
+                <button id="btnVolta" class="btn-sentido" onclick="setSentido('volta')">
+                    🌆 VOLTA — Para Casa
+                </button>
+            </div>
+            <div id="infoSentidoBox" class="rota-sentido-info" style="margin:0 40px 16px 40px;"></div>
+            <div style="padding:0 40px;margin-bottom:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+                <select id="filtroRotaTurno" onchange="renderRotas()" class="rota-select-filter">
+                    <option value="">Todos os turnos</option>
+                    <option value="Manhã">Manhã</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noite">Noite</option>
+                </select>
+                <select id="filtroRotaOnibus" onchange="renderRotas()" class="rota-select-filter">
+                    <option value="">Todos os ônibus</option>
+                </select>
+                <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir Rotas</button>
+            </div>
+            <div id="rotasContainer" style="padding:0 40px 40px 40px;"></div>
+        </div>
+
+        <!-- ===== AUTO ROTEIRIZAR ===== -->
+        <div id="autoRoteirizar" class="tab-content">
+            <div style="padding:30px 40px;">
+
+                <!-- Header -->
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:16px;">
+                    <div>
+                        <h2 style="color:#2E3440;font-size:22px;margin-bottom:4px;">✨ Roteirização Automática</h2>
+                        <p style="color:#4A4A4A;font-size:13px;">O sistema agrupa os colaboradores por proximidade geográfica e sugere a frota ideal automaticamente.</p>
+                    </div>
+                </div>
+
+                <!-- Configurações -->
+                <div style="background:#F8F8F8;border:1px solid #E8E8E8;border-radius:12px;padding:20px;margin-bottom:24px;">
+                    <div style="font-weight:700;color:#2E3440;margin-bottom:16px;font-size:14px;">⚙️ Configurações</div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;flex-wrap:wrap;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Turno</label>
+                            <select id="autoTurno" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:0.95em;">
+                                <option value="Manhã">🌅 Manhã</option>
+                                <option value="Tarde">🌆 Tarde</option>
+                                <option value="Noite">🌙 Noite</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>🌅 Horário IDA (Garagem)</label>
+                            <input type="time" id="autoHorarioIda" value="06:30" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:0.95em;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>🌆 Horário VOLTA (Kuhn)</label>
+                            <input type="time" id="autoHorarioVolta" value="17:30" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:0.95em;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Ponto de Origem</label>
+                            <input type="text" id="autoPontoOrigem" value="Passo Fundo - RS" placeholder="Ex: Rua X, 100 - Bairro" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:0.95em;">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Capacidade de referência</label>
+                            <select id="autoCapacidade" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:0.95em;">
+                                <option value="46">🚌 Ônibus (46 lugares)</option>
+                                <option value="28">🚐 Micro-ônibus (28 lugares)</option>
+                                <option value="15">🚐 Van (15 lugares)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;display:flex;flex-direction:column;gap:8px;justify-content:flex-end;">
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:#2E3440;">
+                                <input type="checkbox" id="autoUsarGoogle" checked style="width:16px;height:16px;accent-color:#ED1C24;">
+                                🗺️ Otimizar rota via Google Maps
+                            </label>
+                            <button onclick="calcularRoteirizacao()"
+                                style="width:100%;padding:11px;background:linear-gradient(135deg,#ED1C24,#c0392b);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(237,28,36,0.3);">
+                                🔍 Calcular Agrupamento
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading -->
+                <div id="autoLoading" style="display:none;text-align:center;padding:40px;">
+                    <div style="font-size:40px;margin-bottom:12px;">⚙️</div>
+                    <div style="font-size:16px;font-weight:700;color:#2E3440;">Calculando agrupamento...</div>
+                    <div style="font-size:13px;color:#4A4A4A;margin-top:4px;">Processando coordenadas de todos os colaboradores</div>
+                </div>
+
+                <!-- Resultado -->
+                <div id="autoResultado" style="display:none;">
+
+                    <!-- Resumo -->
+                    <div id="autoResumo" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;"></div>
+
+                    <!-- Mapa dos grupos -->
+                    <div class="dash-card" style="margin-bottom:24px;">
+                        <div class="dash-card-title">🗺️ Mapa dos Grupos — Distribuição Geográfica</div>
+                        <div id="autoMapa" style="height:420px;border-radius:10px;overflow:hidden;border:1px solid #E8E8E8;"></div>
+                        <div id="autoMapaLegenda" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:12px;"></div>
+                    </div>
+
+                    <!-- Cards dos grupos -->
+                    <div style="font-weight:700;color:#2E3440;font-size:16px;margin-bottom:16px;">
+                        🚌 Grupos Sugeridos — <span id="autoTotalGrupos">0</span> linhas
+                    </div>
+                    <div id="autoGruposContainer" style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px;"></div>
+
+                    <!-- Botão Aplicar -->
+                    <div style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border:2px solid #10b981;border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                        <div>
+                            <div style="font-weight:700;color:#0F6E56;font-size:15px;">✅ Pronto para aplicar!</div>
+                            <div style="font-size:13px;color:#4A4A4A;margin-top:4px;">
+                                O sistema vai criar os ônibus automaticamente e alocar todos os colaboradores.
+                                <strong>Atenção:</strong> as alocações existentes serão substituídas.
+                            </div>
+                        </div>
+                        <button onclick="aplicarRoteirizacao()"
+                            style="padding:12px 28px;background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 4px 12px rgba(16,185,129,0.3);">
+                            🚀 Aplicar Roteirização
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== CADASTRAR ===== -->
+        <div id="cadastrar" class="tab-content">
+
+            <!-- Form Colaborador -->
+            <div class="form-container" style="margin:20px 40px;width:calc(100% - 80px);">
+                <h2>👥 Cadastrar Colaborador</h2>
+                <form id="formColaborador">
+                    <div class="form-row" style="grid-template-columns:repeat(3,1fr);gap:15px;">
+                        <div class="form-group">
+                            <label for="colMatricula">Matrícula *</label>
+                            <input type="text" id="colMatricula" required placeholder="Ex: 001234">
+                        </div>
+                        <div class="form-group">
+                            <label for="colNome">Nome Completo *</label>
+                            <input type="text" id="colNome" required placeholder="Nome do colaborador">
+                        </div>
+                        <div class="form-group">
+                            <label for="colCpf">CPF</label>
+                            <input type="text" id="colCpf" placeholder="000.000.000-00">
+                        </div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:repeat(3,1fr);gap:15px;">
+                        <div class="form-group">
+                            <label for="colTelefone">Telefone</label>
+                            <input type="text" id="colTelefone" placeholder="(54) 99999-9999">
+                        </div>
+                        <div class="form-group">
+                            <label for="colTurno">Turno *</label>
+                            <select id="colTurno" required>
+                                <option value="Manhã">Manhã</option>
+                                <option value="Tarde">Tarde</option>
+                                <option value="Noite">Noite</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="colSetor">Setor</label>
+                            <input type="text" id="colSetor" placeholder="Ex: Produção, TI, RH...">
+                        </div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:1fr 2fr 1fr;gap:15px;">
+                        <div class="form-group">
+                            <label for="colEstado">Estado *</label>
+                            <select id="colEstado" onchange="onEstadoChange('col')" style="width:100%;padding:10px 14px;border:1px solid #D0B580;border-radius:6px;font-size:0.95em;">
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="colCidade">Cidade *</label>
+                            <select id="colCidade" onchange="onCidadeChange('col')" style="width:100%;padding:10px 14px;border:1px solid #D0B580;border-radius:6px;font-size:0.95em;" disabled>
+                                <option value="">Selecione o estado primeiro...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="colCep">CEP</label>
+                            <input type="text" id="colCep" placeholder="99000-000">
+                        </div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:2fr 1fr 1fr;gap:15px;">
+                        <div class="form-group">
+                            <label for="colLogradouro">Rua / Logradouro *</label>
+                            <input type="text" id="colLogradouro" required placeholder="Ex: Rua Uruguai">
+                        </div>
+                        <div class="form-group">
+                            <label for="colNumero">Número</label>
+                            <input type="text" id="colNumero" placeholder="Ex: 350">
+                        </div>
+                        <div class="form-group">
+                            <label for="colBairro">Bairro *</label>
+                            <div style="position:relative;">
+                                <input type="text" id="colBairro" required placeholder="Digite o bairro..."
+                                    autocomplete="off" oninput="onBairroInput('col')"
+                                    style="width:100%;padding:10px 14px;border:1px solid #D0B580;border-radius:6px;font-size:0.95em;">
+                                <div id="colBairroDropdown" class="bairro-autocomplete-dropdown" style="display:none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:1fr;gap:15px;">
+                        <div class="form-group">
+                            <label for="colOnibus">Ônibus / Linha</label>
+                            <select id="colOnibus">
+                                <option value="">— Sem ônibus —</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:1fr;gap:15px;">
+                        <div class="form-group">
+                            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#F8F8F8;border:2px solid #E8E8E8;border-radius:10px;cursor:pointer;" onclick="toggleMotorista()">
+                                <input type="checkbox" id="colIsMotorista" style="width:18px;height:18px;cursor:pointer;accent-color:#ED1C24;">
+                                <div>
+                                    <div style="font-weight:700;color:#2E3440;font-size:14px;">🚌 Este colaborador é motorista</div>
+                                    <div style="font-size:12px;color:#666;margin-top:2px;">Marque se este colaborador dirige um ônibus da empresa</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="campoOnibusMotorista" style="display:none;">
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label for="colOnibusMotorista">🚌 Ônibus que ele dirige</label>
+                            <select id="colOnibusMotorista" style="width:100%;padding:10px 14px;border:2px solid #ED1C24;border-radius:8px;font-size:0.95em;">
+                                <option value="">— Selecione o ônibus —</option>
+                            </select>
+                            <small style="color:#4A4A4A;">O motorista será vinculado a este ônibus no app.</small>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <button type="button" class="btn btn-info" onclick="sugerirLinha()" id="btnSugerirLinha">
+                            🚌 Sugerir Melhor Linha pelo Bairro
+                        </button>
+                    </div>
+                    <div id="boxSugestaoLinha" style="display:none;margin-bottom:16px;"></div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">✅ Cadastrar Colaborador</button>
+                        <button type="button" class="btn btn-secondary" onclick="limparFormColaborador()">🗑️ Limpar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Form Ônibus -->
+            <div class="form-container" style="margin:0 40px 20px 40px;width:calc(100% - 80px);">
+                <h2>🚌 Cadastrar Ônibus</h2>
+                <form id="formOnibus">
+                    <div class="form-row" style="grid-template-columns:repeat(4,1fr);gap:15px;">
+                        <div class="form-group">
+                            <label for="busNome">Nome da Linha *</label>
+                            <input type="text" id="busNome" required placeholder="Ex: Linha Norte">
+                        </div>
+                        <div class="form-group">
+                            <label for="busPlaca">Placa *</label>
+                            <input type="text" id="busPlaca" required placeholder="ABC-1234" maxlength="8" style="text-transform:uppercase;">
+                        </div>
+                        <div class="form-group">
+                            <label for="busTipoVeiculo">Tipo de Veículo *</label>
+                            <select id="busTipoVeiculo" required onchange="onTipoVeiculoChange()">
+                                <option value="">Selecione...</option>
+                                <option value="Ônibus">🚌 Ônibus</option>
+                                <option value="Micro-ônibus">🚐 Micro-ônibus</option>
+                                <option value="Van">🚐 Van</option>
+                                <option value="Carro">🚗 Carro</option>
+                            </select>
+                            <small style="color:#4A4A4A;">A capacidade será preenchida automaticamente</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="busCapacidade">Capacidade *</label>
+                            <input type="number" id="busCapacidade" required placeholder="Ex: 40" min="1" max="200">
+                        </div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:2fr 1fr;gap:15px;">
+                        <div class="form-group">
+                            <label for="busOrigem">Endereço de Origem *</label>
+                            <input type="text" id="busOrigem" required placeholder="Ex: Rua Morom, 1200 - Bairro">
+                        </div>
+                        <div class="form-group">
+                            <label for="busCep">CEP de Origem</label>
+                            <input type="text" id="busCep" placeholder="99000-000" maxlength="9">
+                        </div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:1fr 1fr;gap:15px;">
+                        <div class="form-group">
+                            <label for="busHorario">🌅 Horário de Saída — IDA (Garagem) *</label>
+                            <input type="time" id="busHorario" required value="06:30">
+                            <small style="color:#4A4A4A;">Horário que o ônibus sai da garagem</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="busHorarioVolta">🌆 Horário de Saída — VOLTA (Kuhn Brasil) *</label>
+                            <input type="time" id="busHorarioVolta" required value="17:30">
+                            <small style="color:#4A4A4A;">Horário que o ônibus sai da empresa</small>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:4px;">
+                        <label>🏘️ Bairros Atendidos por esta Linha</label>
+                        <div class="form-row" style="grid-template-columns:1fr 2fr;gap:12px;margin-bottom:12px;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label for="busEstado" style="font-size:12px;">1️⃣ Estado</label>
+                                <select id="busEstado" onchange="onEstadoChange('bus')" style="width:100%;padding:8px 12px;border:1px solid #D0B580;border-radius:6px;font-size:0.9em;">
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label for="busCidadeSelect" style="font-size:12px;">2️⃣ Cidade</label>
+                                <select id="busCidadeSelect" onchange="onCidadeChange('bus')" style="width:100%;padding:8px 12px;border:1px solid #D0B580;border-radius:6px;font-size:0.9em;" disabled>
+                                    <option value="">Selecione o estado primeiro...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <label style="font-size:12px;">3️⃣ Bairros</label>
+                        <div style="display:flex;gap:8px;margin-bottom:8px;position:relative;">
+                            <div style="flex:1;position:relative;">
+                                <input type="text" id="busBairroInput" placeholder="Selecione a cidade primeiro..."
+                                    style="width:100%;padding:8px 12px;border:1px solid #D0B580;border-radius:6px;font-size:0.95em;"
+                                    autocomplete="off" oninput="onBairroInput('bus')" disabled>
+                                <div id="busBairroDropdown" class="bairro-autocomplete-dropdown" style="display:none;"></div>
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="adicionarBairroOnibus()" style="white-space:nowrap;">+ Adicionar</button>
+                        </div>
+                        <div id="busBairrosTags" class="bairros-tags-container"></div>
+                        <small style="color:#4A4A4A;">Selecione o estado e cidade, depois digite o bairro — o Google vai sugerir automaticamente.</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">✅ Cadastrar Ônibus</button>
+                        <button type="button" class="btn btn-secondary" onclick="limparFormOnibus()">🗑️ Limpar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ===== USUÁRIOS ===== -->
+        <div id="usuarios" class="tab-content">
+            <div class="form-container" style="margin:20px 40px;width:calc(100% - 80px);">
+                <h2>👤 Gerenciamento de Usuários</h2>
+                <form id="formUsuarioRota">
+                    <div class="form-row" style="grid-template-columns:repeat(2,1fr);gap:15px;">
+                        <div class="form-group">
+                            <label>Nome Completo *</label>
+                            <input type="text" id="uNome" required placeholder="Nome do usuário">
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="uEmail" required placeholder="email@kuhnbrasil.com.br">
+                        </div>
+                    </div>
+                    <div class="form-row" style="grid-template-columns:repeat(2,1fr);gap:15px;">
+                        <div class="form-group">
+                            <label>Senha</label>
+                            <input type="password" id="uSenha" placeholder="Mínimo 6 caracteres">
+                            <small style="color:#4A4A4A;">Deixe em branco ao editar para manter a senha atual.</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Perfil *</label>
+                            <select id="uPerfil" required>
+                                <option value="visualizador">Visualizador</option>
+                                <option value="operador">Operador</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">✅ Salvar Usuário</button>
+                        <button type="button" class="btn btn-secondary" onclick="limparFormUsuarioRota()">🗑️ Limpar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="table-container">
+                <h2>📋 Usuários Cadastrados</h2>
+                <div class="search-box">
+                    <input type="text" id="searchUsuariosRota" placeholder="Buscar por nome ou email..." onkeyup="filtrarTabelaGenerica('tbodyUsuariosRota', this.value)">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Nome</th><th>Email</th><th>Perfil</th><th>Cadastrado em</th><th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyUsuariosRota"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div><!-- /container -->
+
+    <!-- Modal Genérico -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Modal Alocar -->
+    <div id="modalAlocar" class="modal">
+        <div class="modal-content" style="max-width:480px;">
+            <span class="close" onclick="fecharModalAlocar()">&times;</span>
+            <h2 style="color:#2E3440;margin-bottom:16px;">🚌 Alocar em Ônibus</h2>
+            <p id="modalAlocarNome" style="color:#4A4A4A;margin-bottom:20px;font-weight:600;font-size:1.05em;"></p>
+            <div class="form-group">
+                <label>Selecione o Ônibus / Linha</label>
+                <select id="modalSelectOnibus" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:6px;font-size:1em;">
+                    <option value="">— Sem ônibus —</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-top:10px;">
+                <label>Ordem de Embarque (opcional)</label>
+                <input type="number" id="modalOrdemEmbarque" placeholder="Ex: 1, 2, 3..." min="1"
+                    style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:6px;font-size:1em;">
+            </div>
+            <div class="form-actions" style="margin-top:20px;">
+                <button class="btn btn-primary" onclick="confirmarAlocacao()">✅ Confirmar Alocação</button>
+                <button class="btn btn-secondary" onclick="fecharModalAlocar()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mensagem" class="mensagem"></div>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <span class="footer-user-icon">👤</span>
+                <span class="footer-user-text">Usuário: <strong id="footerUsuarioEmail">--</strong></span>
+                <span id="footerUsuarioPerfil" class="footer-badge">ADMINISTRADOR</span>
+            </div>
+            <div class="footer-center">
+                <div class="footer-date-box"><span>Dia: <strong id="footerDay">--</strong></span></div>
+                <span class="footer-divider">•</span>
+                <div class="footer-date-box"><span>Data: <strong id="footerDate">--/--/----</strong></span></div>
+                <span class="footer-divider">•</span>
+                <div class="footer-date-box footer-date-box--highlight"><span>Hora: <strong id="footerTime">--:--:--</strong></span></div>
+            </div>
+            <div class="footer-right">
+                <span class="footer-online">● Online</span>
+                <span class="footer-divider">•</span>
+                <span id="footerYear">© 2025</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    function onTipoVeiculoChange() {
+        const tipo = document.getElementById('busTipoVeiculo').value;
+        const capacidades = { 'Ônibus': 46, 'Micro-ônibus': 28, 'Van': 15, 'Carro': 4 };
+        if (capacidades[tipo]) document.getElementById('busCapacidade').value = capacidades[tipo];
+    }
+
+    // ========== AUTO ROTEIRIZAR ==========
+    const CORES_GRUPOS = ['#ED1C24','#185FA5','#10b981','#f59e0b','#8b5cf6','#ec4899','#0891b2','#65a30d','#f97316','#14b8a6'];
+    let _dadosRoteirizacao = null;
+    let _autoMapa = null;
+    let _grupos = []; // estado mutável dos grupos (editável pelo usuário)
+
+    async function calcularRoteirizacao() {
+        const turno      = document.getElementById('autoTurno').value;
+        const capacidade = parseInt(document.getElementById('autoCapacidade').value);
+        document.getElementById('autoLoading').style.display = 'block';
+        document.getElementById('autoResultado').style.display = 'none';
+        try {
+            const res = await fetch(`${API_URL}/rota/roteirizar`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ turno, capacidade_veiculo: capacidade, usar_google: document.getElementById('autoUsarGoogle').checked })
+            });
+            const data = await res.json();
+            if (!res.ok) { mostrarMensagem(data.error || 'Erro ao calcular', 'error'); return; }
+            _dadosRoteirizacao = data;
+            // Cópia mutável dos grupos para edição manual
+            _grupos = JSON.parse(JSON.stringify(data.grupos));
+            renderResultadoRoteirizacao(data);
+        } catch(e) {
+            mostrarMensagem('Erro ao conectar com servidor', 'error');
+        } finally {
+            document.getElementById('autoLoading').style.display = 'none';
+        }
+    }
+
+    function sugerirVeiculo(qtd) {
+        if (qtd <= 4)  return {tipo:'Carro',        capacidade:4,  icon:'🚗'};
+        if (qtd <= 15) return {tipo:'Van',           capacidade:15, icon:'🚐'};
+        if (qtd <= 28) return {tipo:'Micro-ônibus',  capacidade:28, icon:'🚐'};
+        return             {tipo:'Ônibus',         capacidade:46, icon:'🚌'};
+    }
+
+    function renderResultadoRoteirizacao(data) {
+        document.getElementById('autoResultado').style.display = 'block';
+        renderResumoCards();
+        setTimeout(() => renderMapaGrupos(_grupos), 300);
+        renderCardsGrupos();
+    }
+
+    function renderResumoCards() {
+        const total = _grupos.reduce((s, g) => s + g.colaboradores.length, 0);
+        const onibus = _grupos.filter(g => g.sugestao.tipo === 'Ônibus').length;
+        const micro  = _grupos.filter(g => g.sugestao.tipo === 'Micro-ônibus').length;
+        const vans   = _grupos.filter(g => g.sugestao.tipo === 'Van').length;
+        const semCoords = _dadosRoteirizacao.sem_coords || 0;
+        document.getElementById('autoTotalGrupos').textContent = _grupos.length;
+        const totalKm  = _grupos.reduce((s,g) => s + (g.distancia_km||0), 0).toFixed(1);
+        const totalMin = _grupos.reduce((s,g) => s + (g.duracao_min||0), 0);
+        document.getElementById('autoResumo').innerHTML = `
+            <div class="metric-card"><div class="metric-icon">👥</div><div class="metric-info"><div class="metric-value">${total}</div><div class="metric-label">Colaboradores</div></div></div>
+            <div class="metric-card"><div class="metric-icon">🗺️</div><div class="metric-info"><div class="metric-value">${_grupos.length}</div><div class="metric-label">Linhas Sugeridas</div></div></div>
+            <div class="metric-card"><div class="metric-icon">🚌</div><div class="metric-info"><div class="metric-value">${onibus}</div><div class="metric-label">Ônibus</div></div></div>
+            <div class="metric-card"><div class="metric-icon">📏</div><div class="metric-info"><div class="metric-value">${totalKm} km</div><div class="metric-label">Km Total / Dia</div></div></div>
+            <div class="metric-card"><div class="metric-icon">⚠️</div><div class="metric-info"><div class="metric-value" style="color:#f59e0b;">${semCoords}</div><div class="metric-label">Sem Coordenadas</div></div></div>`;
+    }
+
+    function renderCardsGrupos() {
+        const container = document.getElementById('autoGruposContainer');
+        container.innerHTML = '';
+
+        _grupos.forEach((grupo, i) => {
+            const cor  = CORES_GRUPOS[i % CORES_GRUPOS.length];
+            const s    = sugerirVeiculo(grupo.colaboradores.length);
+            grupo.sugestao = s; // atualiza sugestão em tempo real
+            const perc = Math.round((grupo.colaboradores.length / s.capacidade) * 100);
+            const corBarra = perc > 95 ? '#ED1C24' : perc > 75 ? '#f59e0b' : '#10b981';
+
+            const colabsHTML = grupo.colaboradores.map((c, j) => `
+                <div style="display:flex;align-items:center;gap:6px;background:#F8F8F8;border:1px solid #E8E8E8;padding:4px 8px;border-radius:8px;font-size:11px;">
+                    <span style="color:#999;min-width:18px;">${j+1}.</span>
+                    <span style="flex:1;color:#2E3440;font-weight:500;">${c.nome.split(' ')[0]} ${c.nome.split(' ').slice(-1)[0]}</span>
+                    ${c.bairro ? `<span style="color:#666;font-size:10px;">— ${c.bairro}</span>` : ''}
+                    <button onclick="moverColaborador(${i}, ${j})"
+                        title="Mover para outro grupo"
+                        style="background:none;border:1px solid #D0B580;border-radius:6px;padding:2px 6px;cursor:pointer;font-size:11px;color:#4A4A4A;white-space:nowrap;">
+                        🔀 Mover
+                    </button>
+                </div>`).join('');
+
+            container.innerHTML += `
+                <div id="grupo-card-${i}" style="background:#FAFAFA;border:1px solid #E8E8E8;border-left:5px solid ${cor};border-radius:10px;padding:16px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div style="width:14px;height:14px;border-radius:50%;background:${cor};flex-shrink:0;"></div>
+                            <strong style="font-size:15px;color:#2E3440;">Grupo ${i+1}</strong>
+                            <span id="badge-${i}" style="background:${cor};color:white;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">${grupo.colaboradores.length} pessoas</span>
+                                ${grupo.distancia_km ? `<span style="background:#EEF2FF;color:#4338ca;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">📏 ${grupo.distancia_km} km</span>` : ''}
+                                ${grupo.duracao_min ? `<span style="background:#F0FDF4;color:#166534;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">⏱️ ${grupo.duracao_min} min</span>` : ''}
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <div style="width:80px;height:8px;background:#E8E8E8;border-radius:4px;overflow:hidden;">
+                                    <div style="width:${Math.min(perc,100)}%;height:100%;background:${corBarra};border-radius:4px;"></div>
+                                </div>
+                                <span id="perc-${i}" style="font-size:11px;color:${corBarra};font-weight:700;">${perc}%</span>
+                            </div>
+                            <span style="font-size:18px;">${s.icon}</span>
+                            <strong style="color:#2E3440;">${s.tipo}</strong>
+                            <span style="font-size:11px;color:#666;">(${s.capacidade} lugares)</span>
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;">
+                        ${colabsHTML}
+                    </div>
+                </div>`;
+        });
+    }
+
+    // Modal para mover colaborador
+    function moverColaborador(grupoIdx, colabIdx) {
+        const colab  = _grupos[grupoIdx].colaboradores[colabIdx];
+        const opcoes = _grupos.map((g, i) => {
+            if (i === grupoIdx) return '';
+            const s = sugerirVeiculo(g.colaboradores.length + 1);
+            const temVaga = g.colaboradores.length < s.capacidade;
+            return `<option value="${i}" ${!temVaga ? 'disabled' : ''}>
+                Grupo ${i+1} — ${g.colaboradores.length} pessoas ${!temVaga ? '(lotado)' : ''}
+            </option>`;
+        }).join('');
+
+        // Criar modal simples
+        const modalDiv = document.createElement('div');
+        modalDiv.id = 'modalMover';
+        modalDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
+        modalDiv.innerHTML = `
+            <div style="background:white;border-radius:14px;padding:28px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+                <h3 style="color:#2E3440;margin-bottom:6px;">🔀 Mover Colaborador</h3>
+                <p style="color:#4A4A4A;font-size:13px;margin-bottom:20px;">
+                    <strong>${colab.nome}</strong><br>
+                    <span style="color:#666;">${colab.bairro || ''}</span>
+                </p>
+                <div style="margin-bottom:16px;">
+                    <label style="font-size:13px;font-weight:600;color:#2E3440;display:block;margin-bottom:6px;">Mover para qual grupo?</label>
+                    <select id="selectGrupoDestino" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:14px;">
+                        ${opcoes}
+                    </select>
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <button onclick="confirmarMover(${grupoIdx}, ${colabIdx})"
+                        style="flex:1;padding:10px;background:linear-gradient(135deg,#ED1C24,#c0392b);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">
+                        ✅ Confirmar
+                    </button>
+                    <button onclick="document.getElementById('modalMover').remove()"
+                        style="flex:1;padding:10px;background:#F0F0F0;color:#2E3440;border:none;border-radius:8px;font-size:14px;cursor:pointer;">
+                        Cancelar
+                    </button>
+                </div>
+            </div>`;
+        document.body.appendChild(modalDiv);
+    }
+
+    function confirmarMover(grupoOrigem, colabIdx) {
+        const destino = parseInt(document.getElementById('selectGrupoDestino').value);
+        if (isNaN(destino)) return;
+
+        const colab = _grupos[grupoOrigem].colaboradores.splice(colabIdx, 1)[0];
+        _grupos[destino].colaboradores.push(colab);
+
+        // Remover grupos vazios
+        _grupos = _grupos.filter(g => g.colaboradores.length > 0);
+
+        // Renumerar grupo_ids
+        _grupos.forEach((g, i) => { g.grupo_id = i + 1; });
+
+        document.getElementById('modalMover').remove();
+
+        // Re-renderizar tudo
+        renderResumoCards();
+        renderCardsGrupos();
+        setTimeout(() => renderMapaGrupos(_grupos), 200);
+
+        mostrarMensagem(`✅ Colaborador movido com sucesso!`);
+    }
+
+    function renderMapaGrupos(grupos) {
+        const mapEl = document.getElementById('autoMapa');
+        if (!mapEl || typeof google === 'undefined') return;
+        _autoMapa = new google.maps.Map(mapEl, {
+            center: { lat: -28.2576, lng: -52.4089 }, zoom: 12,
+            mapTypeId: 'roadmap', mapTypeControl: false, streetViewControl: false
+        });
+        const legenda = document.getElementById('autoMapaLegenda');
+        legenda.innerHTML = '';
+        const bounds = new google.maps.LatLngBounds();
+        const infoWindow = new google.maps.InfoWindow();
+        grupos.forEach((grupo, i) => {
+            const cor = CORES_GRUPOS[i % CORES_GRUPOS.length];
+            legenda.innerHTML += `<span style="display:flex;align-items:center;gap:4px;font-size:12px;">
+                <span style="width:12px;height:12px;border-radius:50%;background:${cor};display:inline-block;"></span>
+                Grupo ${i+1} (${grupo.colaboradores.length})
+            </span>`;
+            const centroide = grupo.centroide || {
+                lat: grupo.colaboradores.reduce((s,c) => s+(c.lat||0), 0) / grupo.colaboradores.length,
+                lng: grupo.colaboradores.reduce((s,c) => s+(c.lng||0), 0) / grupo.colaboradores.length
+            };
+            const centro = new google.maps.LatLng(centroide.lat, centroide.lng);
+            bounds.extend(centro);
+            new google.maps.Marker({
+                position: centro, map: _autoMapa, zIndex: 999,
+                icon: { path: google.maps.SymbolPath.CIRCLE, fillColor: cor, fillOpacity: 1, strokeColor: '#FFF', strokeWeight: 3, scale: 18 },
+                label: { text: String(i+1), color: 'white', fontSize: '11px', fontWeight: 'bold' }
+            });
+            grupo.colaboradores.forEach(c => {
+                if (!c.lat || !c.lng) return;
+                const pos = new google.maps.LatLng(c.lat, c.lng);
+                bounds.extend(pos);
+                const marker = new google.maps.Marker({
+                    position: pos, map: _autoMapa,
+                    icon: { path: google.maps.SymbolPath.CIRCLE, fillColor: cor, fillOpacity: 0.7, strokeColor: '#FFF', strokeWeight: 1, scale: 7 }
+                });
+                marker.addListener('click', () => {
+                    infoWindow.setContent(`<div style="font-family:sans-serif;padding:4px;"><strong>${c.nome}</strong><br><span style="font-size:12px;color:#666;">${c.logradouro||''} — ${c.bairro||''}</span></div>`);
+                    infoWindow.open(_autoMapa, marker);
+                });
+            });
+        });
+        new google.maps.Marker({
+            position: { lat: -28.2492, lng: -52.3891 }, map: _autoMapa,
+            title: 'Kuhn Brasil',
+            icon: { path: google.maps.SymbolPath.CIRCLE, fillColor: '#2E3440', fillOpacity: 1, strokeColor: '#ED1C24', strokeWeight: 3, scale: 14 },
+            label: { text: 'K', color: 'white', fontSize: '10px', fontWeight: 'bold' }
+        });
+        if (!bounds.isEmpty()) _autoMapa.fitBounds(bounds, { padding: 40 });
+    }
+
+    async function aplicarRoteirizacao() {
+        if (!_grupos || !_grupos.length) return;
+        const total = _grupos.reduce((s, g) => s + g.colaboradores.length, 0);
+        if (!confirm(`Confirma aplicar a roteirização?\n\n${_grupos.length} linhas serão criadas e ${total} colaboradores alocados.\n\nAs alocações existentes serão substituídas!`)) return;
+        try {
+            const res = await fetch(`${API_URL}/rota/roteirizar/aplicar`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    turno:         document.getElementById('autoTurno').value,
+                    horario_saida: document.getElementById('autoHorarioIda').value,
+                    horario_volta: document.getElementById('autoHorarioVolta').value,
+                    ponto_origem:  document.getElementById('autoPontoOrigem').value,
+                    grupos:        _grupos
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                mostrarMensagem(`✅ ${data.message} — ${data.onibus_criados} ônibus criados, ${data.colaboradores_alocados} colaboradores alocados!`);
+                setTimeout(() => openTab('onibus', null), 1500);
+            } else {
+                mostrarMensagem(data.error || 'Erro ao aplicar', 'error');
+            }
+        } catch(e) { mostrarMensagem('Erro ao conectar com servidor', 'error'); }
+    }
+        </script>
+
+    <script src="/roteirizacao/script.js"></script>
+</body>
+</html>

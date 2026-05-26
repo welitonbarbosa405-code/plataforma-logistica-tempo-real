@@ -1,0 +1,704 @@
+/* =============================================
+   ROTEIRIZAÇÃO DE COLABORADORES — Kuhn Brasil
+   roteirizacao.css
+   ============================================= */
+
+/* ===== SELECT FILTRO ===== */
+.rota-select-filter {
+    padding: 10px 14px;
+    border: 1px solid #D0B580;
+    border-radius: 6px;
+    font-size: 0.9em;
+    background: #FFFFFF;
+    color: #2E3440;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 160px;
+}
+.rota-select-filter:focus {
+    outline: none;
+    border-color: #ED1C24;
+    box-shadow: 0 0 0 3px rgba(237,28,36,0.1);
+}
+
+/* ===== SEÇÃO HEADER ===== */
+.rota-section-header {
+    margin: 0 40px 16px 40px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #D0B580;
+}
+.rota-section-header h3 {
+    font-size: 1.3em;
+    color: #2E3440;
+    font-weight: 700;
+}
+
+/* ===== CARDS GRID DO DASHBOARD ===== */
+.rota-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 0 40px 30px 40px;
+}
+
+.rota-bus-card {
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.rota-bus-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(237,28,36,0.12);
+    border-color: #D0B580;
+}
+.rota-bus-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.rota-bus-nome {
+    font-size: 1em;
+    font-weight: 700;
+    color: #2E3440;
+}
+.rota-bus-placa {
+    font-size: 0.8em;
+    background: #E8E8E8;
+    color: #4A4A4A;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+.rota-bus-meta {
+    font-size: 0.82em;
+    color: #4A4A4A;
+    margin-bottom: 6px;
+}
+.rota-cap-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+.rota-cap-bar {
+    flex: 1;
+    height: 8px;
+    background: #E8E8E8;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.rota-cap-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.rota-cap-txt {
+    font-size: 0.8em;
+    color: #4A4A4A;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+/* ===== ALERTA SEM ÔNIBUS ===== */
+.alerta-card {
+    margin: 0 40px 30px 40px;
+    background: linear-gradient(135deg, #FFFFFF, #FFF8F8);
+    border: 2px solid #ED1C24;
+    border-radius: 12px;
+    padding: 20px;
+}
+.alerta-card h3 {
+    font-size: 1.1em;
+    color: #ED1C24;
+    margin-bottom: 14px;
+    font-weight: 700;
+}
+.alerta-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #F0E8E8;
+    font-size: 0.9em;
+    color: #2E3440;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.alerta-item:last-child {
+    border-bottom: none;
+}
+
+/* ===== ROTAS — TIMELINE ===== */
+.rota-card {
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    transition: box-shadow 0.3s;
+}
+.rota-card:hover {
+    box-shadow: 0 4px 20px rgba(237,28,36,0.1);
+}
+.rota-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #D0B580;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.rota-card-titulo {
+    font-size: 1.15em;
+    font-weight: 700;
+    color: #2E3440;
+}
+.rota-card-placa {
+    font-size: 0.85em;
+    color: #4A4A4A;
+    background: #E8E8E8;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-left: 10px;
+    font-weight: 600;
+}
+.rota-card-badge {
+    background: linear-gradient(135deg, #ED1C24, #2E3440);
+    color: white;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.82em;
+    font-weight: 700;
+}
+
+/* Timeline de paradas */
+.rota-stops-container {
+    padding-left: 8px;
+}
+.rota-stop {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 10px 0;
+    position: relative;
+}
+.rota-stop-line {
+    position: absolute;
+    left: 13px;
+    top: 36px;
+    bottom: -10px;
+    width: 2px;
+    background: #D0B580;
+    z-index: 0;
+}
+.rota-stop:last-child .rota-stop-line {
+    display: none;
+}
+.rota-stop-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #D0B580;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #2E3440;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+}
+.rota-stop-origem {
+    background: #ED1C24;
+    border-color: #ED1C24;
+    color: white;
+}
+.rota-stop-destino {
+    background: #2E3440;
+    border-color: #2E3440;
+    color: white;
+}
+.rota-stop-info {
+    flex: 1;
+    padding-bottom: 4px;
+}
+.rota-stop-nome {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: #2E3440;
+}
+.rota-stop-end {
+    font-size: 0.82em;
+    color: #4A4A4A;
+    margin-top: 2px;
+}
+.rota-stop-hora {
+    font-size: 0.8em;
+    color: #10b981;
+    margin-top: 3px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.rota-turno-badge {
+    background: #E6F1FB;
+    color: #185FA5;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+/* ===== PRINT ===== */
+@media print {
+    .main-header,
+    .main-footer,
+    .nav-btn,
+    select,
+    button,
+    .stats-cards,
+    .dashboard-header {
+        display: none !important;
+    }
+    .tab-content { display: block !important; opacity: 1 !important; }
+    #dashboard, #onibus, #colaboradores, #cadastrar, #usuarios { display: none !important; }
+    #rotas { display: block !important; padding: 0 !important; }
+    .rota-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+    body { background: white; padding: 0; }
+    .container { box-shadow: none; border: none; }
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 768px) {
+    .rota-cards-grid {
+        grid-template-columns: 1fr;
+        margin: 0 15px 20px 15px;
+    }
+    .alerta-card { margin: 0 15px 20px 15px; }
+    .rota-section-header { margin: 0 15px 12px 15px; }
+    #rotasContainer { padding: 0 15px 30px 15px !important; }
+}
+
+/* ===== LAYOUT SPLIT MAPA + TIMELINE ===== */
+.rota-layout-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.rota-mapa-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.rota-mapa-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4A4A4A;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.rota-mapa-container {
+    height: 360px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #D0B580;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    background: #E8E8E8;
+}
+.rota-mapa-legenda {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #4A4A4A;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.rota-legenda-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    margin-right: 4px;
+}
+
+@media (max-width: 900px) {
+    .rota-layout-split {
+        grid-template-columns: 1fr;
+    }
+    .rota-mapa-container {
+        height: 260px;
+    }
+}
+
+/* ===== BOTÕES IDA / VOLTA ===== */
+.btn-sentido {
+    padding: 10px 24px;
+    border: 2px solid #D0B580;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #4A4A4A;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+.btn-sentido:hover {
+    border-color: #ED1C24;
+    color: #ED1C24;
+}
+.btn-sentido-ativo {
+    background: #ED1C24;
+    border-color: #ED1C24;
+    color: white;
+    box-shadow: 0 2px 8px rgba(237,28,36,0.3);
+}
+.btn-sentido-ativo:hover {
+    background: #C4161F;
+    color: white;
+}
+
+/* ===== INFO SENTIDO ===== */
+.rota-sentido-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #F8F8F8;
+    border: 1px solid #E8E8E8;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #2E3440;
+    flex-wrap: wrap;
+}
+.rota-sentido-tag {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-weight: 700;
+    font-size: 12px;
+}
+.rota-sentido-ida {
+    background: #ED1C24;
+    color: white;
+}
+.rota-sentido-volta {
+    background: #2E3440;
+    color: white;
+}
+
+/* ===== MÉTRICAS DA ROTA ===== */
+.rota-metricas {
+    display: flex;
+    gap: 8px;
+    padding: 12px 0;
+    margin-bottom: 16px;
+    border-top: 1px solid #E8E8E8;
+    border-bottom: 1px solid #E8E8E8;
+    flex-wrap: wrap;
+}
+.rota-metrica-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #F8F8F8;
+    border: 1px solid #E8E8E8;
+    border-radius: 8px;
+    padding: 8px 14px;
+    flex: 1;
+    min-width: 120px;
+}
+.rota-metrica-icon {
+    font-size: 16px;
+}
+.rota-metrica-valor {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2E3440;
+    white-space: nowrap;
+}
+.rota-metrica-label {
+    font-size: 11px;
+    color: #4A4A4A;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* ===== BADGES DE HORÁRIO ===== */
+.rota-hora-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #E6F1FB;
+    color: #185FA5;
+    margin-right: 6px;
+}
+.rota-hora-saida {
+    background: #FAEEDA;
+    color: #854F0B;
+}
+.rota-hora-chegada {
+    background: #E1F5EE;
+    color: #0F6E56;
+}
+
+/* ===== DASHBOARD AVANÇADO ===== */
+.dash-grid-main {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+    margin: 0 40px 20px 40px;
+}
+.dash-grid-charts {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.dash-grid-second {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 0 40px 20px 40px;
+}
+.dash-card {
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.dash-card-mapa {
+    min-height: 420px;
+}
+.dash-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2E3440;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #D0B580;
+}
+
+@media (max-width: 1100px) {
+    .dash-grid-main,
+    .dash-grid-second { grid-template-columns: 1fr; }
+}
+
+/* ===== DASHBOARD MÉTRICAS (complemento) ===== */
+#dashboard .dashboard-header {
+    margin: 0 40px 20px 40px !important;
+    border-radius: 12px;
+}
+#dashboard .dashboard-metrics {
+    margin: 0 40px 20px 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    gap: 16px;
+}
+#dashboard .metric-card {
+    background: linear-gradient(135deg,#FFFFFF 0%,#E8E8E8 100%);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid #D0B580;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s ease;
+}
+#dashboard .metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    border-color: #ED1C24;
+}
+#dashboard .metric-icon { font-size: 2.5em; line-height:1; }
+#dashboard .metric-value {
+    font-size: 2em;
+    font-weight: 700;
+    color: #ED1C24;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+#dashboard .metric-label {
+    font-size: 0.85em;
+    color: #4A4A4A;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* ===== BAIRROS TAGS ===== */
+.bairros-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 32px;
+    margin-bottom: 6px;
+}
+.bairro-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #E1F5EE;
+    color: #0F6E56;
+    border: 1px solid #9FE1CB;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+}
+.bairro-tag button {
+    background: none;
+    border: none;
+    color: #0F6E56;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    font-weight: 700;
+}
+.bairro-tag button:hover { color: #ED1C24; }
+
+/* ===== SUGESTÃO DE LINHA ===== */
+.sugestao-header {
+    font-size: 13px;
+    color: #2E3440;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+.sugestao-card {
+    border: 1px solid #E8E8E8;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: #FFFFFF;
+    transition: all 0.2s;
+}
+.sugestao-card:hover { border-color: #D0B580; }
+.sugestao-card-melhor {
+    border: 2px solid #10b981;
+    background: linear-gradient(135deg, #F0FDF9, #FFFFFF);
+}
+.sugestao-card-lotado {
+    opacity: 0.6;
+    background: #F8F8F8;
+}
+.sugestao-recomendado {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0F6E56;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+.sugestao-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+.sugestao-badge-exato   { background: #E1F5EE; color: #0F6E56; }
+.sugestao-badge-parcial { background: #FAEEDA; color: #854F0B; }
+.sugestao-badge-none    { background: #E8E8E8; color: #4A4A4A; }
+.sugestao-vazia {
+    text-align: center;
+    padding: 20px;
+    color: #4A4A4A;
+    font-size: 13px;
+}
+
+/* ===== AUTOCOMPLETE DROPDOWN DE BAIRROS ===== */
+.bairro-autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    border: 1px solid #D0B580;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    z-index: 9999;
+    max-height: 240px;
+    overflow-y: auto;
+}
+.bairro-dropdown-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #2E3440;
+    border-bottom: 1px solid #F0F0F0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition: background 0.15s;
+}
+.bairro-dropdown-item:hover {
+    background: #F0F8F5;
+    color: #0F6E56;
+}
+.bairro-dropdown-item:last-child { border-bottom: none; }
+
+/* Select de estado e cidade */
+select[id="busEstado"],
+select[id="colEstado"],
+select[id="busCidadeSelect"],
+select[id="colCidade"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #D0B580;
+    border-radius: 6px;
+    font-size: 0.95em;
+    background: #FFFFFF;
+    color: #2E3440;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+select[id="busEstado"]:focus,
+select[id="colEstado"]:focus,
+select[id="busCidadeSelect"]:focus,
+select[id="colCidade"]:focus {
+    outline: none;
+    border-color: #ED1C24;
+    box-shadow: 0 0 0 3px rgba(237,28,36,0.1);
+}
+select:disabled {
+    background: #F5F5F5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+/* ===== BAIRRO TAG MINI (tabela de ônibus) ===== */
+.bairro-tag-mini {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 500;
+    background: #E1F5EE;
+    color: #0F6E56;
+    border: 1px solid #9FE1CB;
+    white-space: nowrap;
+}

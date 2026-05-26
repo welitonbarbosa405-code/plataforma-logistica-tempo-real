@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Portaria Kuhn | Login</title>
+    <link rel="stylesheet" href="/portaria/login.css">
+    <link rel="icon" type="image/png" href="/img/logo_kuhn.png">
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-background">
+            <img src="/img/granprime.jpg" alt="Campo Kuhn" class="hero-image" />
+            <div class="hero-overlay"></div>
+        </div>
+
+        <header class="topbar">
+            <div class="brand-group">
+                <div class="brand-logos">
+                    <img src="/img/logo_kuhn.png" alt="Logo Kuhn" class="logo-kuhn">
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">Sistema de Portaria</span>
+                    <strong>Kuhn Brasil</strong>
+                </div>
+            </div>
+            <nav class="topnav">
+                <!-- Navegação removida para sistema de portaria -->
+            </nav>
+        </header>
+
+        <main class="content">
+            <section class="login-card glass">
+                <div class="login-card__intro">
+                    <h1>Entrar</h1>
+                    <p class="system-name">Sistema de Portaria Kuhn Brasil</p>
+
+                    <ul class="features">
+                        <li>
+                            <span class="feature-icon">🚚</span>
+                            <div>
+                                <strong>Controle Avançado</strong>
+                                <p>Acompanhe entradas, saídas e cargas em tempo real.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-icon">🗺️</span>
+                            <div>
+                                <strong>Cobertura Nacional</strong>
+                                <p>Monitoramento centralizado para todas as unidades.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="feature-icon">⚡</span>
+                            <div>
+                                <strong>Agilidade na Operação</strong>
+                                <p>Fluxos otimizados para cadastro e liberação.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="login-card__form">
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" placeholder="exemplo@kuhn.com.br" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="senha">Senha</label>
+                            <div class="input-icon">
+                                <input type="password" id="senha" placeholder="Digite sua senha" required>
+                                <span class="icon-lock">🔒</span>
+                            </div>
+                        </div>
+
+                        <div id="loginAlert" class="login-alert" role="alert" aria-live="assertive"></div>
+
+                        <button type="submit" class="btn-login">Entrar</button>
+                        <p class="signup-hint">Não tem uma conta? <a href="#">Solicite ao administrador</a></p>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <footer class="statusbar glass">
+            <div class="status-left">
+                <span class="status-user-icon">👤</span>
+                <span class="status-user-text">Usuário: <strong>Visitante</strong></span>
+                <span class="status-badge">ADMINISTRADOR</span>
+            </div>
+            <div class="status-center">
+                <div class="status-date-box">
+                    <span>Dia: <strong id="statusDay">--</strong></span>
+                </div>
+                <span class="divider">•</span>
+                <div class="status-date-box">
+                    <span>Data: <strong id="statusDate">--/--/----</strong></span>
+                </div>
+                <span class="divider">•</span>
+                <div class="status-date-box status-date-box--highlight">
+                    <span>Hora: <strong id="statusTime">--:--:--</strong></span>
+                </div>
+            </div>
+            <div class="status-right">
+                <span class="status-online">● Online</span>
+                <span>•</span>
+                <span id="statusYear">© 2025</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/portaria/login.js"></script>
+</body>
+</html>
+
