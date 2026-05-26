@@ -1,5 +1,7 @@
 # 🚀 Plataforma Logística Inteligente — Transporte Corporativo em Tempo Real
 
+> 💡 Plataforma construída para resolver problemas reais de logística corporativa, integrando planejamento, execução e monitoramento em tempo real.
+
 Plataforma completa para gestão logística corporativa, integrando controle de portaria, roteirização inteligente e rastreamento em tempo real de colaboradores.
 
 ---
@@ -10,12 +12,12 @@ Este projeto foi desenvolvido para centralizar e otimizar toda a operação log�
 
 A solução une múltiplos módulos integrados:
 
-- 🛂 Portaria logística
-- 🚚 Roteirização inteligente
-- 🚍 Gestão de frota
-- 📡 Rastreamento em tempo real
-- 📊 Dashboard analítico
-- 📱 Aplicações para motorista e colaborador
+- 🛂 Portaria logística  
+- 🚚 Roteirização inteligente  
+- 🚍 Gestão de frota  
+- 📡 Rastreamento em tempo real  
+- 📊 Dashboard analítico  
+- 📱 Aplicações para motorista e colaborador  
 
 ---
 
@@ -24,103 +26,104 @@ A solução une múltiplos módulos integrados:
 A plataforma é composta por três grandes módulos:
 
 ### 🛂 Portaria
-- Controle de entrada e saída
-- Cadastro de motoristas e veículos
-- Monitoramento de tempo de permanência
+- Controle de entrada e saída  
+- Cadastro de motoristas e veículos  
+- Monitoramento de tempo de permanência  
 
 ---
 
 ### 🚚 Roteirização
-- Agrupamento automático de colaboradores
-- Geração inteligente de rotas
-- Controle de capacidade por veículo
-- Otimização via Google Maps
+- Agrupamento automático de colaboradores  
+- Geração inteligente de rotas  
+- Controle de capacidade por veículo  
+- Otimização via Google Maps  
 
 ---
 
 ### 📡 Rastreamento
-- Monitoramento em tempo real
-- Integração com app do motorista
-- Visualização para colaborador
+- Monitoramento em tempo real  
+- Integração com app do motorista  
+- Visualização para colaborador  
 
 ---
 
 ## 🤖 Roteirização Inteligente
 
-- Clusterização geográfica automática
-- Agrupamento por proximidade
-- Sugestão de linhas
-- Sequenciamento de embarque
+- Clusterização geográfica automática  
+- Agrupamento por proximidade  
+- Sugestão de linhas  
+- Sequenciamento de embarque  
 
 📊 Indicadores gerados:
-- Pessoas por grupo
-- Distância (km)
-- Tempo (min)
-- Ocupação (%)
+
+- Pessoas por grupo  
+- Distância (km)  
+- Tempo (min)  
+- Ocupação (%)  
 
 ---
 
 ## 🚍 Aplicativo do Motorista
 
-- Login por matrícula
-- Visualização da rota
-- Lista de passageiros
-- Navegação integrada
+- Login por matrícula  
+- Visualização da rota  
+- Lista de passageiros  
+- Navegação integrada  
 
 ---
 
 ## 👥 Aplicativo do Colaborador
 
-- Login simples
-- Visualização do ônibus em tempo real
-- Previsão de chegada
-- Acompanhamento da rota
+- Login simples  
+- Visualização do ônibus em tempo real  
+- Previsão de chegada  
+- Acompanhamento da rota  
 
-💡 Experiência similar a apps como Uber
+💡 Experiência similar a aplicativos como Uber  
 
 ---
 
 ## 📡 Monitoramento em Tempo Real
 
-- O motorista inicia a rota
-- Sistema atualiza a posição
-- Colaborador acompanha o deslocamento
+- O motorista inicia a rota  
+- Sistema atualiza a posição  
+- Colaborador acompanha o deslocamento  
 
 ---
 
 ## 📊 Dashboard Analítico
 
-- Total de colaboradores
-- Ônibus ativos
-- Ocupação por linha
-- Km total por dia
-- Tempo médio de rota
+- Total de colaboradores  
+- Ônibus ativos  
+- Ocupação por linha  
+- Km total por dia  
+- Tempo médio de rota  
 
 ---
 
 ## 🚍 Gestão de Frota
 
-- Cadastro de veículos
-- Controle de capacidade
-- Status operacional
-- Ocupação em tempo real
+- Cadastro de veículos  
+- Controle de capacidade  
+- Status operacional  
+- Ocupação em tempo real  
 
 ---
 
 ## ⚠️ Alertas Inteligentes
 
-- Colaboradores sem rota
-- Linhas próximas da lotação
-- Desequilíbrio operacional
+- Colaboradores sem rota  
+- Linhas próximas da lotação  
+- Desequilíbrio operacional  
 
 ---
 
 ## 📄 Relatórios
 
-- Resumo por linha
-- Ocupação e horários
-- Distância e tempo
-- Exportação em PDF / Excel
+- Resumo por linha  
+- Ocupação e horários  
+- Distância e tempo  
+- Exportação em PDF / Excel  
 
 ---
 
@@ -129,53 +132,77 @@ A plataforma é composta por três grandes módulos:
 ---
 
 ### 🔐 Tela de Login
-![](./assets/images/login.png)
+
+<p align="center">
+  <img src="./assets/images/login.png" width="900">
+</p>
 
 ---
 
-### 📊 Dashboard Operacional
-![](./assets/images/dashboard.png)
+### 📊 Dashboard Logístico em Tempo Real
+
+<p align="center">
+  <img src="./assets/images/dashboard.png" width="900">
+</p>
 
 ---
 
 ### 🛂 Controle de Portaria
-![](./assets/images/portaria.png)
+
+<p align="center">
+  <img src="./assets/images/portaria.png" width="900">
+</p>
 
 ---
 
-### 🚚 Gestão de Rotas
-![](./assets/images/rotas.png)
+### 🚚 Planejamento e Gestão de Rotas
+
+<p align="center">
+  <img src="./assets/images/rotas.png" width="900">
+</p>
 
 ---
 
 ### 🗺️ Mapa de Roteirização
-![](./assets/images/mapa.png)
+
+<p align="center">
+  <img src="./assets/images/mapa.png" width="900">
+</p>
 
 ---
 
 ### 🤖 Roteirização Inteligente
-![](./assets/images/roteirizacao.png)
+
+<p align="center">
+  <img src="./assets/images/roteirizacao.png" width="900">
+</p>
 
 ---
 
 ### 🚍 App do Motorista
-![](./assets/images/app_motorista.png)
+
+<p align="center">
+  <img src="./assets/images/app_motorista.png" width="900">
+</p>
 
 ---
 
-### 👥 App do Colaborador (Rastreamento)
-![](./assets/images/app_colaborador.png)
+### 👥 Aplicativo do Colaborador (Rastreamento em Tempo Real)
+
+<p align="center">
+  <img src="./assets/images/app_colaborador.png" width="900">
+</p>
 
 ---
 
 ## 🛠 Tecnologias Utilizadas
 
-- Python
-- Flask
-- JavaScript
-- HTML / CSS
-- Google Maps API
-- Railway (deploy)
+- Python  
+- Flask  
+- JavaScript  
+- HTML / CSS  
+- Google Maps API  
+- Railway (deploy)  
 
 ---
 
@@ -183,28 +210,28 @@ A plataforma é composta por três grandes módulos:
 
 O módulo de rastreamento está ativo em ambiente real:
 
-🔗 https://web-production-78823.up.railway.app
+🔗 https://web-production-78823.up.railway.app  
 
 ---
 
 ## 💡 Diferenciais
 
-- ✅ Roteirização automática com clusterização
-- ✅ Rastreamento em tempo real
-- ✅ Integração completa (Portaria + Transporte)
-- ✅ Aplicações para motorista e colaborador
-- ✅ Dashboard estratégico integrado
-- ✅ Sistema orientado à operação real
+- ✅ Roteirização automática com clusterização  
+- ✅ Rastreamento em tempo real  
+- ✅ Integração completa (Portaria + Transporte)  
+- ✅ Aplicações para motorista e colaborador  
+- ✅ Dashboard estratégico integrado  
+- ✅ Sistema orientado à operação real  
 
 ---
 
 ## 🚀 Possíveis Evoluções
 
-- IA para otimização de rotas
-- GPS em tempo real
-- Aplicativo mobile nativo
-- Cálculo automático de custo logístico
-- Integração com ERP / RH
+- IA para otimização de rotas  
+- GPS em tempo real  
+- Aplicativo mobile nativo  
+- Cálculo automático de custo logístico  
+- Integração com ERP / RH  
 
 ---
 
@@ -217,5 +244,6 @@ Reduzir custos operacionais, otimizar rotas e melhorar a eficiência logística 
 ## 👨‍💻 Autor
 
 **Weliton Barbosa**  
-Analista de Logística | Tecnologia & Dados
-``
+Analista de Logística | Tecnologia & Dados  
+
+---
