@@ -563,6 +563,42 @@ function fecharModalCadastroRapido() {
     document.getElementById('formCadastroRapido').reset();
 }
 
+// ========== WHATSAPP ==========
+function enviarWhatsApp(id, telefone, nome, placa, tipo, empresa, horaEntrada, status) {
+    const APP_URL = 'https://web-production-7cf3c.up.railway.app/acesso';
+
+    const statusTexto = {
+        aguardando: '⏳ Aguardando autorização',
+        autorizado:  '✅ Autorizado — Pode prosseguir',
+        recusado:    '❌ Acesso recusado'
+    }[status] || '⏳ Aguardando autorização';
+
+    const mensagem =
+`🏭 *KUHN BRASIL — PORTARIA*
+
+Olá *${nome}*!
+
+Sua entrada foi registrada com sucesso.
+
+🎫 *Ticket:* #${id}
+🚛 *Placa:* ${placa || '-'}
+📦 *Tipo:* ${tipo || '-'}
+🏢 *Empresa:* ${empresa || '-'}
+⏰ *Entrada:* ${horaEntrada || '-'}
+📊 *Status:* ${statusTexto}
+
+Acompanhe em tempo real pelo link:
+🔗 ${APP_URL}
+
+Digite seu número *${id}* para ver o status atualizado.
+
+_Sistema Kuhn Brasil_`;
+
+    const tel = telefone ? `55${telefone.replace(/\D/g, '')}` : '';
+    const url  = `https://wa.me/${tel}?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
+}
+
 // ========== MODAL DE AUTORIZAÇÃO ==========
 let _autorizarId = null;
 
@@ -711,6 +747,7 @@ async function carregarEntradas() {
                 <td>
                     <div class="action-buttons">
                         <button class="btn btn-info" onclick="imprimirTicketExistente(${entrada.id})" title="Imprimir Ticket">🖨️</button>
+                        <button class="btn" style="background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.4);color:#25d366;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.8rem;" onclick="enviarWhatsApp(${entrada.id},'${(entrada.telefone||'').replace(/\D/g,'')}','${(entrada.nome||'').replace(/'/g,'').replace(/"/g,'')}','${entrada.placa||''}','${entrada.tipo||''}','${entrada.empresa||''}','${entrada.hora_entrada||''}','${autStatus}')" title="Enviar WhatsApp">📱</button>
                         ${!entrada.data_saida && autStatus === 'autorizado' ?
                             `<button class="btn btn-success" onclick="registrarSaida(${entrada.id})">Registrar Saída</button>` : ''
                         }
