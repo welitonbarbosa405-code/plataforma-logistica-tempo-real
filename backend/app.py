@@ -1,6 +1,15 @@
 import sys
 from pathlib import Path
 
+# Carrega variáveis do .env automaticamente
+_env_file = Path(__file__).resolve().parent / '.env'
+if _env_file.exists():
+    for _line in _env_file.read_text().splitlines():
+        if '=' in _line and not _line.startswith('#'):
+            _k, _v = _line.split('=', 1)
+            import os as _os
+            _os.environ.setdefault(_k.strip(), _v.strip())
+
 # Garante que os módulos irmãos (database, portaria, roteirizacao) sejam encontrados
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 

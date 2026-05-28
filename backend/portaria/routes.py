@@ -13,12 +13,11 @@ from flask import Blueprint, jsonify, request, send_file
 
 from database import get_db
 
-RAILWAY_URL   = os.environ.get('RAILWAY_PORTARIA_URL', '')
-RAILWAY_TOKEN = os.environ.get('RAILWAY_PORTARIA_TOKEN', 'kuhn-portaria-sync-2026')
-
-
 def _sync_railway(entrada: dict):
-    if not RAILWAY_URL:
+    url   = os.environ.get('RAILWAY_PORTARIA_URL', '').strip()
+    token = os.environ.get('RAILWAY_PORTARIA_TOKEN', 'kuhn-portaria-sync-2026').strip()
+    print(f'[SYNC PORTARIA] URL={url or "(não configurada)"}')
+    if not url:
         return
     def _send():
         try:
@@ -27,12 +26,13 @@ def _sync_railway(entrada: dict):
             ctx.check_hostname = False
             ctx.verify_mode = ssl.CERT_NONE
             req = urllib.request.Request(
-                f'{RAILWAY_URL}/api/sync/portaria',
+                f'{url}/api/sync/portaria',
                 data=payload,
-                headers={'Content-Type': 'application/json', 'X-Sync-Token': RAILWAY_TOKEN},
+                headers={'Content-Type': 'application/json', 'X-Sync-Token': token},
                 method='POST'
             )
             urllib.request.urlopen(req, timeout=10, context=ctx)
+            print(f'[SYNC PORTARIA] OK — ticket #{entrada.get("id")}')
         except Exception as e:
             print(f'[SYNC PORTARIA] Erro: {e}')
     threading.Thread(target=_send, daemon=True).start()
