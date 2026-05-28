@@ -3,258 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Portaria</title>
+    <title>Sistema de Portaria — Kuhn Brasil</title>
     <link rel="stylesheet" href="/portaria/styles.css">
+    <link rel="icon" type="image/png" href="/img/logo_kuhn.png">
 </head>
 <body>
-    <!-- Cabeçalho -->
+
+    <!-- ===== TOPBAR ===== -->
     <header class="main-header">
         <div class="header-content">
             <div class="header-left">
-                <div class="logo-group">
-                    <img src="/img/logo_kuhn.png" alt="Logo Kuhn" class="logo-kuhn-header">
-                </div>
+                <img src="/img/logo_kuhn.png" alt="Logo Kuhn" class="logo-kuhn-header">
                 <div class="header-title">
-                    <span class="header-subtitle">Sistema de Portaria</span>
-                    <strong class="header-company">Kuhn Brasil</strong>
+                    <span class="header-subtitle">Kuhn Brasil</span>
+                    <strong class="header-company">SISTEMA DE PORTARIA</strong>
                 </div>
             </div>
-            <nav class="header-nav">
-                <button class="nav-btn nav-btn--tab active" onclick="openTab('cadastro', this)">Cadastro</button>
-                <button class="nav-btn nav-btn--tab" onclick="openTab('entrada', this)">Controle de Entrada/Saída</button>
-                <button class="nav-btn nav-btn--tab" onclick="openTab('janela', this)">Janela</button>
-                <button class="nav-btn nav-btn--tab" onclick="openTab('dashboard', this)">📊 Dashboard</button>
-                <button id="btnUsuarios" class="nav-btn nav-btn--tab" onclick="openTab('usuarios', this)" style="display: none;">👥 Usuários</button>
-                <a href="/roteirizacao" class="nav-btn nav-btn--tab">🚌 Roteirização</a>
-                <button id="btnLogout" class="nav-btn nav-btn--logout">Sair</button>
-            </nav>
+            <div class="header-right">
+                <span class="header-user-pill" id="headerUserPill">--</span>
+                <button id="btnLogout" class="btn-topbar-logout">Sair</button>
+            </div>
         </div>
     </header>
 
-    <div class="container">
+    <!-- ===== LAYOUT PRINCIPAL: SIDEBAR + CONTEÚDO ===== -->
+    <div class="app-layout">
 
-        <!-- ABA DE CADASTRO -->
-        <div id="cadastro" class="tab-content active">
-            <!-- Cards de Estatísticas Rápidas -->
-            <div class="stats-cards" id="statsCards">
-                <div class="stat-card">
-                    <div class="stat-icon">👥</div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="statTotalCadastros">0</div>
-                        <div class="stat-label">Total Cadastros</div>
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">👤</div>
+                <div class="sidebar-user-name" id="sidebarUserName">--</div>
+                <div class="sidebar-user-role" id="sidebarUserRole">--</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="sidebar-section-label">PRINCIPAL</div>
+                <button class="sidebar-item nav-btn--tab active" onclick="openTab('cadastro', this)">
+                    <span class="sidebar-icon">📝</span> Cadastro
+                </button>
+                <button class="sidebar-item nav-btn--tab" onclick="openTab('entrada', this)">
+                    <span class="sidebar-icon">🚚</span> Entrada / Saída
+                </button>
+                <button class="sidebar-item nav-btn--tab" onclick="openTab('janela', this)">
+                    <span class="sidebar-icon">🕐</span> Janela
+                </button>
+                <button class="sidebar-item nav-btn--tab" onclick="openTab('dashboard', this)">
+                    <span class="sidebar-icon">📊</span> Dashboard
+                </button>
+
+                <div class="sidebar-section-label" style="margin-top: 8px;">SISTEMA</div>
+                <button id="btnUsuarios" class="sidebar-item nav-btn--tab" onclick="openTab('usuarios', this)" style="display: none;">
+                    <span class="sidebar-icon">👥</span> Usuários
+                </button>
+                <a href="/roteirizacao" class="sidebar-item sidebar-item--link">
+                    <span class="sidebar-icon">🚌</span> Roteirização
+                </a>
+            </nav>
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="container">
+
+            <!-- ABA DE CADASTRO -->
+            <div id="cadastro" class="tab-content active">
+                <div class="stats-cards" id="statsCards">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statTotalCadastros">0</div>
+                            <div class="stat-label">Total Cadastros</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🚚</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statEntradasHoje">0</div>
+                            <div class="stat-label">Entradas Hoje</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="statAguardandoSaida">0</div>
+                            <div class="stat-label">Aguardando Saída</div>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🚚</div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="statEntradasHoje">0</div>
-                        <div class="stat-label">Entradas Hoje</div>
+
+                <!-- Painel do formulário (oculto por padrão) -->
+                <div id="formPanelCadastro" class="form-panel" style="display:none;">
+                    <div class="form-container" style="margin: 0 24px 15px 24px; width: calc(100% - 48px);">
+                        <div class="form-panel-header">
+                            <h2>📝 Novo Motorista</h2>
+                            <button type="button" class="btn-form-close" onclick="toggleFormPanel('cadastro')" title="Fechar">✕</button>
+                        </div>
+                        <form id="formCadastro">
+                            <div class="form-row" style="grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                <div class="form-group">
+                                    <label for="cpf">CPF *</label>
+                                    <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00">
+                                </div>
+                                <div class="form-group">
+                                    <label for="nome">Nome Completo *</label>
+                                    <input type="text" id="nome" name="nome" required placeholder="Digite o nome completo">
+                                </div>
+                                <div class="form-group">
+                                    <label for="telefone">Telefone</label>
+                                    <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000">
+                                </div>
+                            </div>
+                            <div class="form-row" style="grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                <div class="form-group">
+                                    <label for="placaCadastro">Placa do Veículo</label>
+                                    <input type="text" id="placaCadastro" name="placa" placeholder="ABC-1234" maxlength="8" style="text-transform: uppercase;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="integracao">Integração</label>
+                                    <input type="text" id="integracao" name="integracao" placeholder="Nome da integração">
+                                </div>
+                                <div class="form-group">
+                                    <label for="empresa">Empresa</label>
+                                    <input type="text" id="empresa" name="empresa" placeholder="Nome da empresa">
+                                </div>
+                            </div>
+                            <div class="form-row" style="grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                <div class="form-group">
+                                    <label for="transportadora">Transportadora</label>
+                                    <input type="text" id="transportadora" name="transportadora" placeholder="Nome da transportadora">
+                                </div>
+                                <div class="form-group" style="display: flex; align-items: flex-end;">
+                                    <div class="form-actions" style="margin-top: 0; border-top: none; padding-top: 0;">
+                                        <button type="submit" class="btn btn-primary">✅ Cadastrar</button>
+                                        <button type="button" class="btn btn-secondary" onclick="limparFormCadastro()">🗑️ Limpar</button>
+                                    </div>
+                                </div>
+                                <div class="form-group"></div>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">⏳</div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="statAguardandoSaida">0</div>
-                        <div class="stat-label">Aguardando Saída</div>
+
+                <div class="table-container" style="padding: 0 24px;">
+                    <div class="table-page-header">
+                        <h2>📋 Motoristas Cadastrados</h2>
+                        <button class="btn btn-primary btn-novo" onclick="toggleFormPanel('cadastro')">➕ Novo Motorista</button>
                     </div>
+                    <div class="search-box">
+                        <input type="text" id="searchCadastro" placeholder="Buscar por CPF ou Nome..." onkeyup="filtrarCadastros()">
+                    </div>
+                    <table id="tabelaCadastros">
+                        <thead>
+                            <tr>
+                                <th>CPF</th>
+                                <th>Nome</th>
+                                <th>Telefone</th>
+                                <th>Placa</th>
+                                <th>Integração</th>
+                                <th>Empresa</th>
+                                <th>Transportadora</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyCadastros"></tbody>
+                    </table>
                 </div>
             </div>
-            <div class="form-container" style="margin: 0 40px 15px 40px; width: calc(100% - 80px);">
-                <h2>📝 Cadastro de Motoristas</h2>
-                <form id="formCadastro">
-                    <div class="form-row" style="grid-template-columns: repeat(3, 1fr); gap: 15px;">
-                        <div class="form-group">
-                            <label for="cpf">CPF *</label>
-                            <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00">
+
+            <!-- ABA DE CONTROLE DE ENTRADA/SAÍDA -->
+            <div id="entrada" class="tab-content">
+
+                <!-- Painel do formulário (oculto por padrão) -->
+                <div id="formPanelEntrada" class="form-panel" style="display:none;">
+                    <div class="form-container" style="margin: 0 24px 15px 24px; width: calc(100% - 48px);">
+                        <div class="form-panel-header">
+                            <h2>🚚 Registrar Entrada</h2>
+                            <button type="button" class="btn-form-close" onclick="toggleFormPanel('entrada')" title="Fechar">✕</button>
                         </div>
-                        <div class="form-group">
-                            <label for="nome">Nome Completo *</label>
-                            <input type="text" id="nome" name="nome" required placeholder="Digite o nome completo">
-                        </div>
-                        <div class="form-group">
-                            <label for="telefone">Telefone</label>
-                            <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000">
-                        </div>
+                        <form id="formEntrada">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="cpfEntrada">CPF *</label>
+                                    <div style="display: flex; gap: 8px; align-items: flex-start;">
+                                        <input type="text" id="cpfEntrada" name="cpf" required placeholder="000.000.000-00" onblur="buscarCadastroPorCPF()" style="flex: 1;">
+                                        <button type="button" id="btnCadastrarRapido" class="btn btn-warning" onclick="abrirModalCadastroRapido()" style="display: none; white-space: nowrap; padding: 8px 12px; font-size: 0.85em;">➕ Cadastrar</button>
+                                    </div>
+                                    <div id="statusCPF" style="margin-top: 4px; font-size: 0.85em; font-weight: 600;"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nomeEntrada">Nome *</label>
+                                    <input type="text" id="nomeEntrada" name="nome" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="telefoneEntrada">Telefone</label>
+                                    <input type="text" id="telefoneEntrada" name="telefone" placeholder="(00) 00000-0000">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="placa">Placa</label>
+                                    <input type="text" id="placa" name="placa" placeholder="ABC-1234" style="text-transform: uppercase;">
+                                </div>
+                                <div class="form-group">
+                                    <label for="transportadoraEntrada">Transportadora</label>
+                                    <input type="text" id="transportadoraEntrada" name="transportadora">
+                                </div>
+                                <div class="form-group">
+                                    <label for="empresaEntrada">Empresa</label>
+                                    <input type="text" id="empresaEntrada" name="empresa">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="tipo">Tipo</label>
+                                    <select id="tipo" name="tipo">
+                                        <option value="">Selecione...</option>
+                                        <option value="Entrega">Entrega</option>
+                                        <option value="Coleta">Coleta</option>
+                                        <option value="Visita">Visita</option>
+                                        <option value="Outro">Outro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="numeroColeta">N° Coleta</label>
+                                    <input type="text" id="numeroColeta" name="numero_coleta">
+                                </div>
+                                <div class="form-group">
+                                    <label for="integracaoEntrada">Integração</label>
+                                    <input type="text" id="integracaoEntrada" name="integracao">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="solicitante">Solicitante</label>
+                                    <input type="text" id="solicitante" name="solicitante">
+                                </div>
+                                <div class="form-group">
+                                    <label for="vigilante">Vigilante</label>
+                                    <input type="text" id="vigilante" name="vigilante">
+                                </div>
+                                <div class="form-group" style="display: flex; align-items: flex-end;">
+                                    <div class="form-actions" style="margin-top: 0; border-top: none; padding-top: 0;">
+                                        <button type="submit" class="btn btn-primary">✅ Registrar</button>
+                                        <button type="button" class="btn btn-secondary" onclick="limparFormEntrada()">🗑️ Limpar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="form-row" style="grid-template-columns: repeat(3, 1fr); gap: 15px;">
-                        <div class="form-group">
-                            <label for="placaCadastro">Placa do Veículo</label>
-                            <input type="text" id="placaCadastro" name="placa" placeholder="ABC-1234" maxlength="8" style="text-transform: uppercase;">
-                        </div>
-                        <div class="form-group">
-                            <label for="integracao">Integração</label>
-                            <input type="text" id="integracao" name="integracao" placeholder="Nome da integração">
-                        </div>
-                        <div class="form-group">
-                            <label for="empresa">Empresa</label>
-                            <input type="text" id="empresa" name="empresa" placeholder="Nome da empresa">
-                        </div>
+                </div>
+
+                <div class="table-container" style="padding: 0 24px;">
+                    <div class="table-page-header">
+                        <h2>📊 Controle de Entradas/Saídas</h2>
+                        <button class="btn btn-primary btn-novo" onclick="toggleFormPanel('entrada')">➕ Nova Entrada</button>
                     </div>
-                    <div class="form-row" style="grid-template-columns: repeat(3, 1fr); gap: 15px;">
-                        <div class="form-group">
-                            <label for="transportadora">Transportadora</label>
-                            <input type="text" id="transportadora" name="transportadora" placeholder="Nome da transportadora">
+                    <div class="search-box">
+                        <input type="text" id="searchEntrada" placeholder="Buscar por CPF, Nome ou Placa..." onkeyup="filtrarEntradas()">
+                    </div>
+                    <table id="tabelaEntradas">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Data</th>
+                                <th>Tipo</th>
+                                <th>CPF</th>
+                                <th>Nome</th>
+                                <th>Placa</th>
+                                <th>Transportadora</th>
+                                <th>N° Coleta</th>
+                                <th>Empresa</th>
+                                <th>Entrada</th>
+                                <th>Saída</th>
+                                <th>Permanência</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyEntradas"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ABA DE JANELA -->
+            <div id="janela" class="tab-content">
+
+                <!-- Painel do formulário (oculto por padrão) -->
+                <div id="formPanelJanela" class="form-panel" style="display:none;">
+                    <div class="form-container" style="margin: 0 24px 15px 24px; width: calc(100% - 48px);">
+                        <div class="form-panel-header">
+                            <h2>🕐 Nova Janela de Horário</h2>
+                            <button type="button" class="btn-form-close" onclick="toggleFormPanel('janela')" title="Fechar">✕</button>
                         </div>
-                        <div class="form-group" style="display: flex; align-items: flex-end;">
-                            <div class="form-actions" style="margin-top: 0; border-top: none; padding-top: 0;">
+                        <form id="formJanela">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="filial">Filial *</label>
+                                    <input type="text" id="filial" name="filial" required placeholder="Nome da filial">
+                                </div>
+                                <div class="form-group">
+                                    <label for="transportadoraJanela">Transportadora *</label>
+                                    <input type="text" id="transportadoraJanela" name="transportadora" required placeholder="Nome da transportadora">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="diaSemana">Dia da Semana *</label>
+                                    <select id="diaSemana" name="dia_semana" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="Segunda-Feira">Segunda-Feira</option>
+                                        <option value="Terça-Feira">Terça-Feira</option>
+                                        <option value="Quarta-Feira">Quarta-Feira</option>
+                                        <option value="Quinta-Feira">Quinta-Feira</option>
+                                        <option value="Sexta-Feira">Sexta-Feira</option>
+                                        <option value="Sábado">Sábado</option>
+                                        <option value="Domingo">Domingo</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="horario">Horário *</label>
+                                    <input type="time" id="horario" name="horario" required step="1800">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="tipoJanela">Tipo *</label>
+                                <select id="tipoJanela" name="tipo" required>
+                                    <option value="Coleta">Coleta</option>
+                                    <option value="Entrega">Entrega</option>
+                                    <option value="Ambos">Ambos</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
                                 <button type="submit" class="btn btn-primary">✅ Cadastrar</button>
-                                <button type="button" class="btn btn-secondary" onclick="limparFormCadastro()">🗑️ Limpar</button>
+                                <button type="button" class="btn btn-secondary" onclick="limparFormJanela()">🗑️ Limpar</button>
                             </div>
-                        </div>
-                        <div class="form-group"></div>
+                        </form>
                     </div>
-                </form>
-            </div>
-
-            <div class="table-container">
-                <h2>📋 Cadastros Existentes</h2>
-                <div class="search-box">
-                    <input type="text" id="searchCadastro" placeholder="Buscar por CPF ou Nome..." onkeyup="filtrarCadastros()">
                 </div>
-                <table id="tabelaCadastros">
-                    <thead>
-                        <tr>
-                            <th>CPF</th>
-                            <th>Nome</th>
-                            <th>Telefone</th>
-                            <th>Placa</th>
-                            <th>Integração</th>
-                            <th>Empresa</th>
-                            <th>Transportadora</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodyCadastros">
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- ABA DE CONTROLE DE ENTRADA/SAÍDA -->
-        <div id="entrada" class="tab-content">
-            <div class="form-container">
-                <h2>🚚 Registrar Entrada</h2>
-                <form id="formEntrada">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="cpfEntrada">CPF *</label>
-                            <div style="display: flex; gap: 8px; align-items: flex-start;">
-                                <input type="text" id="cpfEntrada" name="cpf" required placeholder="000.000.000-00" onblur="buscarCadastroPorCPF()" style="flex: 1;">
-                                <button type="button" id="btnCadastrarRapido" class="btn btn-warning" onclick="abrirModalCadastroRapido()" style="display: none; white-space: nowrap; padding: 8px 12px; font-size: 0.85em;">➕ Cadastrar</button>
-                            </div>
-                            <div id="statusCPF" style="margin-top: 4px; font-size: 0.85em; font-weight: 600;"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="nomeEntrada">Nome *</label>
-                            <input type="text" id="nomeEntrada" name="nome" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="telefoneEntrada">Telefone</label>
-                            <input type="text" id="telefoneEntrada" name="telefone" placeholder="(00) 00000-0000">
-                        </div>
+                <div class="table-container" style="padding: 0 24px;">
+                    <div class="table-page-header">
+                        <h2>📋 Janelas Cadastradas</h2>
+                        <button class="btn btn-primary btn-novo" onclick="toggleFormPanel('janela')">➕ Nova Janela</button>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="placa">Placa</label>
-                            <input type="text" id="placa" name="placa" placeholder="ABC-1234" style="text-transform: uppercase;">
-                        </div>
-                        <div class="form-group">
-                            <label for="transportadoraEntrada">Transportadora</label>
-                            <input type="text" id="transportadoraEntrada" name="transportadora">
-                        </div>
-                        <div class="form-group">
-                            <label for="empresaEntrada">Empresa</label>
-                            <input type="text" id="empresaEntrada" name="empresa">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="tipo">Tipo</label>
-                            <select id="tipo" name="tipo">
-                                <option value="">Selecione...</option>
-                                <option value="Entrega">Entrega</option>
-                                <option value="Coleta">Coleta</option>
-                                <option value="Visita">Visita</option>
-                                <option value="Outro">Outro</option>
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <label for="filtroTransportadora">Transportadora:</label>
+                            <select id="filtroTransportadora" onchange="aplicarFiltrosJanela()">
+                                <option value="">Todas</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="numeroColeta">N° Coleta</label>
-                            <input type="text" id="numeroColeta" name="numero_coleta">
-                        </div>
-                        <div class="form-group">
-                            <label for="integracaoEntrada">Integração</label>
-                            <input type="text" id="integracaoEntrada" name="integracao">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="solicitante">Solicitante</label>
-                            <input type="text" id="solicitante" name="solicitante">
-                        </div>
-                        <div class="form-group">
-                            <label for="vigilante">Vigilante</label>
-                            <input type="text" id="vigilante" name="vigilante">
-                        </div>
-                        <div class="form-group" style="display: flex; align-items: flex-end;">
-                            <div class="form-actions" style="margin-top: 0; border-top: none; padding-top: 0;">
-                                <button type="submit" class="btn btn-primary">✅ Registrar</button>
-                                <button type="button" class="btn btn-secondary" onclick="limparFormEntrada()">🗑️ Limpar</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="table-container">
-                <h2>📊 Controle de Entradas/Saídas</h2>
-                <div class="search-box">
-                    <input type="text" id="searchEntrada" placeholder="Buscar por CPF, Nome ou Placa..." onkeyup="filtrarEntradas()">
-                </div>
-                <table id="tabelaEntradas">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Data</th>
-                            <th>Tipo</th>
-                            <th>CPF</th>
-                            <th>Nome</th>
-                            <th>Placa</th>
-                            <th>Transportadora</th>
-                            <th>N° Coleta</th>
-                            <th>Empresa</th>
-                            <th>Entrada</th>
-                            <th>Saída</th>
-                            <th>Tempo de Permanência</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodyEntradas">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ABA DE JANELA -->
-        <div id="janela" class="tab-content">
-            <div class="form-container">
-                <h2>🕐 Janela de Horários</h2>
-                <form id="formJanela">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="filial">Filial *</label>
-                            <input type="text" id="filial" name="filial" required placeholder="Nome da filial">
-                        </div>
-                        <div class="form-group">
-                            <label for="transportadoraJanela">Transportadora *</label>
-                            <input type="text" id="transportadoraJanela" name="transportadora" required placeholder="Nome da transportadora">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="diaSemana">Dia da Semana *</label>
-                            <select id="diaSemana" name="dia_semana" required>
-                                <option value="">Selecione...</option>
+                        <div class="filter-group">
+                            <label for="filtroDiaSemana">Dia da Semana:</label>
+                            <select id="filtroDiaSemana" onchange="aplicarFiltrosJanela()">
+                                <option value="">Todos</option>
                                 <option value="Segunda-Feira">Segunda-Feira</option>
                                 <option value="Terça-Feira">Terça-Feira</option>
                                 <option value="Quarta-Feira">Quarta-Feira</option>
@@ -264,312 +365,296 @@
                                 <option value="Domingo">Domingo</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="horario">Horário *</label>
-                            <input type="time" id="horario" name="horario" required step="1800">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="tipoJanela">Tipo *</label>
-                        <select id="tipoJanela" name="tipo" required>
-                            <option value="Coleta">Coleta</option>
-                            <option value="Entrega">Entrega</option>
-                            <option value="Ambos">Ambos</option>
-                        </select>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">✅ Cadastrar</button>
-                        <button type="button" class="btn btn-secondary" onclick="limparFormJanela()">🗑️ Limpar</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="table-container">
-                <h2>📋 Janelas Cadastradas</h2>
-                <div class="filters-container">
-                    <div class="filter-group">
-                        <label for="filtroTransportadora">Filtrar por Transportadora:</label>
-                        <select id="filtroTransportadora" onchange="aplicarFiltrosJanela()">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filtroDiaSemana">Filtrar por Dia da Semana:</label>
-                        <select id="filtroDiaSemana" onchange="aplicarFiltrosJanela()">
-                            <option value="">Todos</option>
-                            <option value="Segunda-Feira">Segunda-Feira</option>
-                            <option value="Terça-Feira">Terça-Feira</option>
-                            <option value="Quarta-Feira">Quarta-Feira</option>
-                            <option value="Quinta-Feira">Quinta-Feira</option>
-                            <option value="Sexta-Feira">Sexta-Feira</option>
-                            <option value="Sábado">Sábado</option>
-                            <option value="Domingo">Domingo</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filtroTipoJanela">Filtrar por Tipo:</label>
-                        <select id="filtroTipoJanela" onchange="aplicarFiltrosJanela()">
-                            <option value="">Todos</option>
-                            <option value="Coleta">Coleta</option>
-                            <option value="Entrega">Entrega</option>
-                            <option value="Ambos">Ambos</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-secondary" onclick="limparFiltrosJanela()">🔄 Limpar Filtros</button>
-                </div>
-                <div class="search-box">
-                    <input type="text" id="searchJanela" placeholder="Buscar por Filial, Transportadora ou Dia..." onkeyup="filtrarJanelas()">
-                </div>
-                <table id="tabelaJanelas">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Filial</th>
-                            <th>Transportadora</th>
-                            <th>Dia da Semana</th>
-                            <th>Horário</th>
-                            <th>Tipo</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodyJanelas">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ABA DE DASHBOARD -->
-        <div id="dashboard" class="tab-content">
-            <div class="dashboard-header">
-                <h1>📊 Dashboard de Análises</h1>
-                <p>Visualizações e estatísticas do sistema de portaria</p>
-            </div>
-
-            <div class="dashboard-metrics">
-                <div class="metric-card">
-                    <div class="metric-icon">🚚</div>
-                    <div class="metric-info">
-                        <div class="metric-value" id="metricTotalEntradas">0</div>
-                        <div class="metric-label">Total de Entradas</div>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon">⏱️</div>
-                    <div class="metric-info">
-                        <div class="metric-value" id="metricTempoMedio">0 min</div>
-                        <div class="metric-label">Tempo Médio de Permanência</div>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon">📦</div>
-                    <div class="metric-info">
-                        <div class="metric-value" id="metricTotalTransportadoras">0</div>
-                        <div class="metric-label">Transportadoras Ativas</div>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-icon">🕐</div>
-                    <div class="metric-info">
-                        <div class="metric-value" id="metricJanelasCadastradas">0</div>
-                        <div class="metric-label">Janelas Cadastradas</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dashboard-charts">
-                <div class="chart-container">
-                    <h3>📈 Entradas por Horário do Dia</h3>
-                    <canvas id="chartEntradasHorario"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>📊 Entradas por Transportadora</h3>
-                    <canvas id="chartEntradasTransportadora"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>📅 Entradas por Dia da Semana</h3>
-                    <canvas id="chartEntradasDiaSemana"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>⏱️ Distribuição de Tempo de Permanência</h3>
-                    <canvas id="chartTempoPermanencia"></canvas>
-                </div>
-            </div>
-
-            <div class="dashboard-table-container">
-                <h3>📋 Estatísticas Detalhadas por Transportadora</h3>
-                <table id="tabelaEstatisticasTransportadora">
-                    <thead>
-                        <tr>
-                            <th>Transportadora</th>
-                            <th>Total Entradas</th>
-                            <th>Tempo Médio</th>
-                            <th>Entradas Hoje</th>
-                            <th>Janelas Cadastradas</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodyEstatisticasTransportadora">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ABA DE USUÁRIOS (APENAS ADMINISTRADORES) -->
-        <div id="usuarios" class="tab-content">
-            <div class="form-container">
-                <h2>👥 Gerenciamento de Usuários</h2>
-                <form id="formUsuario">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="nomeUsuario">Nome Completo *</label>
-                            <input type="text" id="nomeUsuario" name="nome" required placeholder="Digite o nome completo">
-                        </div>
-                        <div class="form-group">
-                            <label for="emailUsuario">Email *</label>
-                            <input type="email" id="emailUsuario" name="email" required placeholder="usuario@exemplo.com">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="senhaUsuario">Senha <span id="senhaObrigatoria">*</span></label>
-                            <input type="password" id="senhaUsuario" name="senha" placeholder="Digite a senha" minlength="6" required>
-                            <small style="color: #4A4A4A; font-size: 0.9em;">Mínimo 6 caracteres. Deixe em branco ao editar para manter a senha atual.</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="perfilUsuario">Perfil *</label>
-                            <select id="perfilUsuario" name="perfil" required onchange="aplicarPermissoesPadrao()">
-                                <option value="porteiro">Porteiro</option>
-                                <option value="supervisor">Supervisor</option>
-                                <option value="administrador">Administrador</option>
+                        <div class="filter-group">
+                            <label for="filtroTipoJanela">Tipo:</label>
+                            <select id="filtroTipoJanela" onchange="aplicarFiltrosJanela()">
+                                <option value="">Todos</option>
+                                <option value="Coleta">Coleta</option>
+                                <option value="Entrega">Entrega</option>
+                                <option value="Ambos">Ambos</option>
                             </select>
                         </div>
+                        <button class="btn btn-secondary" onclick="limparFiltrosJanela()">🔄 Limpar</button>
                     </div>
-
-                    <div class="permissoes-container">
-                        <h3 style="color: #2E3440; margin: 30px 0 20px 0; font-size: 1.5em; border-bottom: 2px solid #D0B580; padding-bottom: 10px;">🔐 Permissões do Usuário</h3>
-                        <div class="permissoes-grid">
-                            <div class="permissoes-grupo">
-                                <h4 style="color: #ED1C24; margin-bottom: 15px;">📝 Cadastros</h4>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_cadastro_criar" name="perm_cadastro_criar"><span>Criar Cadastros</span></label>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_cadastro_editar" name="perm_cadastro_editar"><span>Editar Cadastros</span></label>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_cadastro_excluir" name="perm_cadastro_excluir"><span>Excluir Cadastros</span></label>
-                            </div>
-                            <div class="permissoes-grupo">
-                                <h4 style="color: #ED1C24; margin-bottom: 15px;">🚚 Entradas/Saídas</h4>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_entrada_criar" name="perm_entrada_criar"><span>Criar Entradas</span></label>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_entrada_editar" name="perm_entrada_editar"><span>Editar Entradas</span></label>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_entrada_excluir" name="perm_entrada_excluir"><span>Excluir Entradas</span></label>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_entrada_registrar_saida" name="perm_entrada_registrar_saida"><span>Registrar Saída</span></label>
-                            </div>
-                            <div class="permissoes-grupo">
-                                <h4 style="color: #ED1C24; margin-bottom: 15px;">🕐 Janelas</h4>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_janela_criar" name="perm_janela_criar"><span>Criar Janelas</span></label>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_janela_editar" name="perm_janela_editar"><span>Editar Janelas</span></label>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_janela_excluir" name="perm_janela_excluir"><span>Excluir Janelas</span></label>
-                            </div>
-                            <div class="permissoes-grupo">
-                                <h4 style="color: #ED1C24; margin-bottom: 15px;">📊 Outras</h4>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_dashboard_visualizar" name="perm_dashboard_visualizar"><span>Visualizar Dashboard</span></label>
-                                <label class="checkbox-label"><input type="checkbox" id="perm_usuarios_gerenciar" name="perm_usuarios_gerenciar"><span>Gerenciar Usuários</span></label>
-                            </div>
-                        </div>
-                        <div style="margin-top: 20px; display: flex; gap: 10px;">
-                            <button type="button" class="btn btn-secondary" onclick="aplicarPermissoesPadrao()" style="padding: 10px 20px; font-size: 0.9em;">🔄 Aplicar Permissões Padrão do Perfil</button>
-                            <button type="button" class="btn btn-secondary" onclick="marcarTodasPermissoes()" style="padding: 10px 20px; font-size: 0.9em;">✅ Marcar Todas</button>
-                            <button type="button" class="btn btn-secondary" onclick="desmarcarTodasPermissoes()" style="padding: 10px 20px; font-size: 0.9em;">❌ Desmarcar Todas</button>
-                        </div>
+                    <div class="search-box">
+                        <input type="text" id="searchJanela" placeholder="Buscar por Filial, Transportadora ou Dia..." onkeyup="filtrarJanelas()">
                     </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">✅ Salvar</button>
-                        <button type="button" class="btn btn-secondary" onclick="limparFormUsuario()">🗑️ Limpar</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="table-container">
-                <h2>📋 Usuários Cadastrados</h2>
-                <div class="search-box">
-                    <input type="text" id="searchUsuario" placeholder="Buscar por Nome ou Email..." onkeyup="filtrarUsuarios()">
+                    <table id="tabelaJanelas">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Filial</th>
+                                <th>Transportadora</th>
+                                <th>Dia da Semana</th>
+                                <th>Horário</th>
+                                <th>Tipo</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyJanelas"></tbody>
+                    </table>
                 </div>
-                <table id="tabelaUsuarios">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                            <th>Email</th>
-                            <th>Perfil</th>
-                            <th>Data de Criação</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodyUsuarios">
-                    </tbody>
-                </table>
             </div>
-        </div>
 
-        <!-- Modal de Edição -->
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModal()">&times;</span>
-                <div id="modalBody"></div>
+            <!-- ABA DE DASHBOARD -->
+            <div id="dashboard" class="tab-content">
+                <div id="dashboard" style="padding: 0 24px;">
+                    <div class="dashboard-header">
+                        <h1>📊 Dashboard de Análises</h1>
+                        <p>Visualizações e estatísticas do sistema de portaria</p>
+                    </div>
+
+                    <div class="dashboard-metrics">
+                        <div class="metric-card">
+                            <div class="metric-icon">🚚</div>
+                            <div class="metric-info">
+                                <div class="metric-value" id="metricTotalEntradas">0</div>
+                                <div class="metric-label">Total de Entradas</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">⏱️</div>
+                            <div class="metric-info">
+                                <div class="metric-value" id="metricTempoMedio">0 min</div>
+                                <div class="metric-label">Tempo Médio de Permanência</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">📦</div>
+                            <div class="metric-info">
+                                <div class="metric-value" id="metricTotalTransportadoras">0</div>
+                                <div class="metric-label">Transportadoras Ativas</div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">🕐</div>
+                            <div class="metric-info">
+                                <div class="metric-value" id="metricJanelasCadastradas">0</div>
+                                <div class="metric-label">Janelas Cadastradas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-charts">
+                        <div class="chart-container">
+                            <h3>📈 Entradas por Horário do Dia</h3>
+                            <canvas id="chartEntradasHorario"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>📊 Entradas por Transportadora</h3>
+                            <canvas id="chartEntradasTransportadora"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>📅 Entradas por Dia da Semana</h3>
+                            <canvas id="chartEntradasDiaSemana"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>⏱️ Tempo de Permanência</h3>
+                            <canvas id="chartTempoPermanencia"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-table-container">
+                        <h3>📋 Estatísticas por Transportadora</h3>
+                        <table id="tabelaEstatisticasTransportadora">
+                            <thead>
+                                <tr>
+                                    <th>Transportadora</th>
+                                    <th>Total Entradas</th>
+                                    <th>Tempo Médio</th>
+                                    <th>Entradas Hoje</th>
+                                    <th>Janelas Cadastradas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyEstatisticasTransportadora"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Modal de Cadastro Rápido -->
-        <div id="modalCadastroRapido" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="fecharModalCadastroRapido()">&times;</span>
-                <h2 style="color: #2E3440; margin-bottom: 20px;">➕ Cadastrar Motorista</h2>
-                <p style="color: #4A4A4A; margin-bottom: 20px;">Motorista não encontrado. Preencha os dados para cadastrar:</p>
-                <form id="formCadastroRapido">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="cpfRapido">CPF *</label>
-                            <input type="text" id="cpfRapido" name="cpf" required placeholder="000.000.000-00" readonly>
+            <!-- ABA DE USUÁRIOS -->
+            <div id="usuarios" class="tab-content">
+                <div class="form-container" style="margin: 0 24px 15px 24px; width: calc(100% - 48px);">
+                    <h2>👥 Gerenciamento de Usuários</h2>
+                    <form id="formUsuario">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nomeUsuario">Nome Completo *</label>
+                                <input type="text" id="nomeUsuario" name="nome" required placeholder="Digite o nome completo">
+                            </div>
+                            <div class="form-group">
+                                <label for="emailUsuario">Email *</label>
+                                <input type="email" id="emailUsuario" name="email" required placeholder="usuario@exemplo.com">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="nomeRapido">Nome Completo *</label>
-                            <input type="text" id="nomeRapido" name="nome" required placeholder="Digite o nome completo">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="senhaUsuario">Senha <span id="senhaObrigatoria">*</span></label>
+                                <input type="password" id="senhaUsuario" name="senha" placeholder="Digite a senha" minlength="6" required>
+                                <small style="color: var(--muted); font-size: 0.85em;">Mínimo 6 caracteres.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="perfilUsuario">Perfil *</label>
+                                <select id="perfilUsuario" name="perfil" required onchange="aplicarPermissoesPadrao()">
+                                    <option value="porteiro">Porteiro</option>
+                                    <option value="supervisor">Supervisor</option>
+                                    <option value="administrador">Administrador</option>
+                                </select>
+                            </div>
                         </div>
+
+                        <div class="permissoes-container">
+                            <h3 style="color: var(--text); margin: 24px 0 16px; font-size: 1.2em; border-bottom: 1px solid var(--border-red); padding-bottom: 10px;">🔐 Permissões do Usuário</h3>
+                            <div class="permissoes-grid">
+                                <div class="permissoes-grupo">
+                                    <h4 style="color: var(--red); margin-bottom: 12px;">📝 Cadastros</h4>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_cadastro_criar" name="perm_cadastro_criar"><span>Criar Cadastros</span></label>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_cadastro_editar" name="perm_cadastro_editar"><span>Editar Cadastros</span></label>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_cadastro_excluir" name="perm_cadastro_excluir"><span>Excluir Cadastros</span></label>
+                                </div>
+                                <div class="permissoes-grupo">
+                                    <h4 style="color: var(--red); margin-bottom: 12px;">🚚 Entradas/Saídas</h4>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_entrada_criar" name="perm_entrada_criar"><span>Criar Entradas</span></label>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_entrada_editar" name="perm_entrada_editar"><span>Editar Entradas</span></label>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_entrada_excluir" name="perm_entrada_excluir"><span>Excluir Entradas</span></label>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_entrada_registrar_saida" name="perm_entrada_registrar_saida"><span>Registrar Saída</span></label>
+                                </div>
+                                <div class="permissoes-grupo">
+                                    <h4 style="color: var(--red); margin-bottom: 12px;">🕐 Janelas</h4>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_janela_criar" name="perm_janela_criar"><span>Criar Janelas</span></label>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_janela_editar" name="perm_janela_editar"><span>Editar Janelas</span></label>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_janela_excluir" name="perm_janela_excluir"><span>Excluir Janelas</span></label>
+                                </div>
+                                <div class="permissoes-grupo">
+                                    <h4 style="color: var(--red); margin-bottom: 12px;">📊 Outras</h4>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_dashboard_visualizar" name="perm_dashboard_visualizar"><span>Visualizar Dashboard</span></label>
+                                    <label class="checkbox-label"><input type="checkbox" id="perm_usuarios_gerenciar" name="perm_usuarios_gerenciar"><span>Gerenciar Usuários</span></label>
+                                </div>
+                            </div>
+                            <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+                                <button type="button" class="btn btn-secondary" onclick="aplicarPermissoesPadrao()">🔄 Permissões Padrão</button>
+                                <button type="button" class="btn btn-secondary" onclick="marcarTodasPermissoes()">✅ Marcar Todas</button>
+                                <button type="button" class="btn btn-secondary" onclick="desmarcarTodasPermissoes()">❌ Desmarcar Todas</button>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">✅ Salvar</button>
+                            <button type="button" class="btn btn-secondary" onclick="limparFormUsuario()">🗑️ Limpar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-container" style="padding: 0 24px;">
+                    <h2>📋 Usuários Cadastrados</h2>
+                    <div class="search-box">
+                        <input type="text" id="searchUsuario" placeholder="Buscar por Nome ou Email..." onkeyup="filtrarUsuarios()">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="telefoneRapido">Telefone</label>
-                            <input type="text" id="telefoneRapido" name="telefone" placeholder="(00) 00000-0000">
-                        </div>
-                        <div class="form-group">
-                            <label for="placaRapido">Placa do Veículo</label>
-                            <input type="text" id="placaRapido" name="placa" placeholder="ABC-1234" maxlength="8" style="text-transform: uppercase;">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="integracaoRapido">Integração</label>
-                            <input type="text" id="integracaoRapido" name="integracao" placeholder="Nome da integração">
-                        </div>
-                        <div class="form-group">
-                            <label for="empresaRapido">Empresa</label>
-                            <input type="text" id="empresaRapido" name="empresa" placeholder="Nome da empresa">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="transportadoraRapido">Transportadora</label>
-                        <input type="text" id="transportadoraRapido" name="transportadora" placeholder="Nome da transportadora">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">✅ Cadastrar e Continuar</button>
-                        <button type="button" class="btn btn-secondary" onclick="fecharModalCadastroRapido()">Cancelar</button>
-                    </div>
-                </form>
+                    <table id="tabelaUsuarios">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Perfil</th>
+                                <th>Data de Criação</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyUsuarios"></tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <!-- Mensagem de feedback -->
-        <div id="mensagem" class="mensagem"></div>
+            <!-- Modal de Autorização -->
+            <div id="modalAutorizar" class="modal">
+                <div class="modal-content" style="max-width: 480px;">
+                    <span class="close" onclick="fecharModalAutorizar()">&times;</span>
+                    <h2 style="color: var(--text); margin-bottom: 6px;">🔓 Autorizar Entrada</h2>
+                    <p id="modalAutorizarInfo" style="color: var(--muted); font-size: 0.85rem; margin-bottom: 20px;"></p>
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label style="font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em;">Local / Doca</label>
+                        <input type="text" id="autorizarDoca" placeholder="Ex: Doca 3, Setor B..." style="width:100%; padding:10px 12px; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:0.95rem;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label style="font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em;">Observação</label>
+                        <textarea id="autorizarObs" rows="3" placeholder="Ex: Seguir pela entrada lateral..." style="width:100%; padding:10px 12px; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:0.95rem; resize:vertical;"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em;">Autorizado por</label>
+                        <input type="text" id="autorizarResponsavel" placeholder="Nome do responsável" style="width:100%; padding:10px 12px; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:0.95rem;">
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="confirmarAutorizacao('autorizado')" class="btn btn-primary" style="flex:1; padding:12px; font-size:1rem;">✅ Autorizar</button>
+                        <button onclick="confirmarAutorizacao('recusado')" class="btn" style="flex:1; padding:12px; background:rgba(204,0,0,0.15); border:1px solid rgba(204,0,0,0.4); color:#f87171; border-radius:8px; font-size:1rem; cursor:pointer;">❌ Recusar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Edição -->
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="fecharModal()">&times;</span>
+                    <div id="modalBody"></div>
+                </div>
+            </div>
+
+            <!-- Modal de Cadastro Rápido -->
+            <div id="modalCadastroRapido" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="fecharModalCadastroRapido()">&times;</span>
+                    <h2 style="color: var(--text); margin-bottom: 16px;">➕ Cadastrar Motorista</h2>
+                    <p style="color: var(--muted); margin-bottom: 16px;">Motorista não encontrado. Preencha os dados para cadastrar:</p>
+                    <form id="formCadastroRapido">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cpfRapido">CPF *</label>
+                                <input type="text" id="cpfRapido" name="cpf" required placeholder="000.000.000-00" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="nomeRapido">Nome Completo *</label>
+                                <input type="text" id="nomeRapido" name="nome" required placeholder="Digite o nome completo">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="telefoneRapido">Telefone</label>
+                                <input type="text" id="telefoneRapido" name="telefone" placeholder="(00) 00000-0000">
+                            </div>
+                            <div class="form-group">
+                                <label for="placaRapido">Placa do Veículo</label>
+                                <input type="text" id="placaRapido" name="placa" placeholder="ABC-1234" maxlength="8" style="text-transform: uppercase;">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="integracaoRapido">Integração</label>
+                                <input type="text" id="integracaoRapido" name="integracao" placeholder="Nome da integração">
+                            </div>
+                            <div class="form-group">
+                                <label for="empresaRapido">Empresa</label>
+                                <input type="text" id="empresaRapido" name="empresa" placeholder="Nome da empresa">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="transportadoraRapido">Transportadora</label>
+                            <input type="text" id="transportadoraRapido" name="transportadora" placeholder="Nome da transportadora">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">✅ Cadastrar e Continuar</button>
+                            <button type="button" class="btn btn-secondary" onclick="fecharModalCadastroRapido()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Toast -->
+            <div id="mensagem" class="mensagem"></div>
+
+        </main>
     </div>
 
-    <!-- Rodapé -->
+    <!-- ===== FOOTER ===== -->
     <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-left">
@@ -578,27 +663,22 @@
                 <span id="footerUsuarioPerfil" class="footer-badge">ADMINISTRADOR</span>
             </div>
             <div class="footer-center">
-                <div class="footer-date-box">
-                    <span>Dia: <strong id="footerDay">--</strong></span>
-                </div>
+                <div class="footer-date-box">Dia: <strong id="footerDay">--</strong></div>
                 <span class="footer-divider">•</span>
-                <div class="footer-date-box">
-                    <span>Data: <strong id="footerDate">--/--/----</strong></span>
-                </div>
+                <div class="footer-date-box">Data: <strong id="footerDate">--/--/----</strong></div>
                 <span class="footer-divider">•</span>
-                <div class="footer-date-box footer-date-box--highlight">
-                    <span>Hora: <strong id="footerTime">--:--:--</strong></span>
-                </div>
+                <div class="footer-date-box footer-date-box--highlight">Hora: <strong id="footerTime">--:--:--</strong></div>
             </div>
             <div class="footer-right">
                 <span class="footer-online">● Online</span>
+                <span class="footer-divider">•</span>
+                <span>Kuhn Portaria</span>
                 <span class="footer-divider">•</span>
                 <span id="footerYear">© 2025</span>
             </div>
         </div>
     </footer>
 
-    <!-- Chart.js para gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="/portaria/script.js"></script>
 </body>

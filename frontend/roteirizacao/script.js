@@ -140,7 +140,7 @@ async function carregarDashboard() {
                 const icon = pct >= 100 ? '🔴' : '🟡';
                 const msg  = pct >= 100 ? 'LOTADO' : 'QUASE LOTADO';
                 alertsEl.innerHTML += `
-                    <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:${pct>=100?'#FCEBEB':'#FAEEDA'};border-left:4px solid ${cor};border-radius:8px;font-size:13px;">
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-left:4px solid ${cor};border-radius:8px;font-size:13px;color:#f0ece8;">
                         <span style="font-size:18px;">${icon}</span>
                         <strong>${bus.nome}</strong> — ${msg}: ${pass}/${bus.capacidade} passageiros (${pct}%)
                         <a href="#" onclick="openTab('cadastrar',null)" style="margin-left:auto;color:${cor};font-weight:600;font-size:12px;">Ver ônibus →</a>
@@ -155,24 +155,24 @@ async function carregarDashboard() {
             const pass = rotas.filter(r => r.onibus_id === bus.id && r.ativo).length;
             const vagas = bus.capacidade - pass;
             alertsEl.innerHTML += `
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:#E1F5EE;border-left:4px solid #10b981;border-radius:8px;font-size:13px;">
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-left:4px solid #10b981;border-radius:8px;font-size:13px;color:#f0ece8;">
                     <span style="font-size:18px;">🟢</span>
                     <strong>${bus.nome}</strong> — ${vagas} vagas disponíveis. Pode absorver mais colaboradores!
                 </div>`;
         });
         if (semRota.length > 0) {
             alertsEl.innerHTML += `
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:#FCEBEB;border-left:4px solid #ED1C24;border-radius:8px;font-size:13px;">
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:rgba(204,0,0,0.08);border:1px solid rgba(204,0,0,0.25);border-left:4px solid #CC0000;border-radius:8px;font-size:13px;color:#f0ece8;">
                     <span style="font-size:18px;">⚠️</span>
                     <strong>${semRota.length} colaborador${semRota.length>1?'es':''}</strong> sem ônibus definido.
-                    <a href="#" onclick="openTab('colaboradores',null)" style="margin-left:auto;color:#ED1C24;font-weight:600;font-size:12px;">Alocar agora →</a>
+                    <a href="#" onclick="openTab('colaboradores',null)" style="margin-left:auto;color:#CC0000;font-weight:600;font-size:12px;">Alocar agora →</a>
                 </div>`;
         }
         // Avisar sobre motoristas cadastrados
         const motoristas = colabs.filter(c => c.is_motorista);
         if (motoristas.length > 0) {
             alertsEl.innerHTML += `
-                <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:#E6F1FB;border-left:4px solid #185FA5;border-radius:8px;font-size:13px;">
+                <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:rgba(24,95,165,0.12);border:1px solid rgba(96,165,250,0.2);border-left:4px solid #60a5fa;border-radius:8px;font-size:13px;color:#f0ece8;">
                     <span style="font-size:18px;">🚌</span>
                     <strong>${motoristas.length} motorista${motoristas.length>1?'s':''}</strong> cadastrado${motoristas.length>1?'s':''}: ${motoristas.map(m=>m.nome.split(' ')[0]).join(', ')}.
                 </div>`;
@@ -240,24 +240,24 @@ async function carregarDashboard() {
             const kmId = `km-resumo-${bus.id}`;
             const tempoId = `tempo-resumo-${bus.id}`;
             tbody.innerHTML += `
-                <tr style="border-bottom:1px solid #E8E8E8;">
-                    <td style="padding:10px 12px;font-weight:600;">${bus.nome}</td>
-                    <td style="padding:10px 12px;color:#4A4A4A;">${bus.placa}</td>
-                    <td style="padding:10px 12px;color:#4A4A4A;">${bus.tipo_veiculo || 'Ônibus'}</td>
-                    <td style="padding:10px 12px;text-align:center;font-weight:700;">${pass}</td>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                    <td style="padding:10px 12px;font-weight:600;color:#f0ece8;">${bus.nome}</td>
+                    <td style="padding:10px 12px;color:rgba(255,255,255,0.5);">${bus.placa}</td>
+                    <td style="padding:10px 12px;color:rgba(255,255,255,0.5);">${bus.tipo_veiculo || 'Ônibus'}</td>
+                    <td style="padding:10px 12px;text-align:center;font-weight:700;color:#f0ece8;">${pass}</td>
                     <td style="padding:10px 12px;text-align:center;">
                         <div style="display:flex;align-items:center;gap:6px;">
-                            <div style="flex:1;height:6px;background:#E8E8E8;border-radius:3px;overflow:hidden;">
+                            <div style="flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
                                 <div style="width:${pct}%;height:100%;background:${cor};border-radius:3px;"></div>
                             </div>
                             <span style="font-size:12px;font-weight:700;color:${cor};">${pct}%</span>
                         </div>
                     </td>
-                    <td style="padding:10px 12px;font-size:12px;">${status}</td>
-                    <td style="padding:10px 12px;text-align:center;font-weight:600;">${bus.horario_saida ? bus.horario_saida.substring(0,5) : '--'}</td>
-                    <td style="padding:10px 12px;text-align:center;font-weight:600;">${bus.horario_saida_volta ? bus.horario_saida_volta.substring(0,5) : '--'}</td>
-                    <td style="padding:10px 12px;text-align:center;color:#185FA5;font-weight:600;" id="${kmId}">—</td>
-                    <td style="padding:10px 12px;text-align:center;color:#0F6E56;font-weight:600;" id="${tempoId}">—</td>
+                    <td style="padding:10px 12px;font-size:12px;color:#f0ece8;">${status}</td>
+                    <td style="padding:10px 12px;text-align:center;font-weight:600;color:#f0ece8;">${bus.horario_saida ? bus.horario_saida.substring(0,5) : '--'}</td>
+                    <td style="padding:10px 12px;text-align:center;font-weight:600;color:#f0ece8;">${bus.horario_saida_volta ? bus.horario_saida_volta.substring(0,5) : '--'}</td>
+                    <td style="padding:10px 12px;text-align:center;color:#60a5fa;font-weight:600;" id="${kmId}">—</td>
+                    <td style="padding:10px 12px;text-align:center;color:#10b981;font-weight:600;" id="${tempoId}">—</td>
                 </tr>`;
 
             // Calcular km/tempo via Google para cada linha

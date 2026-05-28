@@ -1,15 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-    --red: #ED1C24;
-    --red-dark: #B10F15;
-    --gold: #D0B580;
-    --gray-dark: #2E3440;
-    --gray-mid: #4A4A4A;
-    --gray-light: #E8E8E8;
-    --white: #FFFFFF;
-    --glass-bg: rgba(255, 255, 255, 0.08);
-    --shadow: rgba(0, 0, 0, 0.45);
+    --red: #CC0000;
+    --red-dark: #990000;
+    --red-glow: rgba(204, 0, 0, 0.35);
+    --bg: #0d0907;
+    --panel: #160c0a;
+    --card: #1e1210;
+    --border: rgba(255, 255, 255, 0.07);
+    --border-red: rgba(204, 0, 0, 0.25);
+    --text: #f0ece8;
+    --muted: rgba(255, 255, 255, 0.45);
+    --glass-bg: rgba(255, 255, 255, 0.06);
 }
 
 * {
@@ -19,10 +21,10 @@
 }
 
 body {
-    font-family: 'Montserrat', sans-serif;
-    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
     min-height: 100vh;
-    background: var(--gray-dark);
+    background: var(--bg);
     padding-bottom: 60px;
 }
 
@@ -45,13 +47,13 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: none;
+    filter: brightness(0.35) saturate(0.6);
 }
 
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(115deg, rgba(46, 52, 64, 0.3) 0%, rgba(237, 28, 36, 0.2) 50%, rgba(0, 0, 0, 0.25) 100%);
+    background: linear-gradient(115deg, rgba(13, 9, 7, 0.6) 0%, rgba(204, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0.5) 100%);
 }
 
 .topbar {
@@ -62,8 +64,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(90deg, rgba(237, 28, 36, 0.95), rgba(237, 28, 36, 0.82));
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    background: linear-gradient(90deg, rgba(204, 0, 0, 0.97), rgba(153, 0, 0, 0.90));
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid var(--border-red);
 }
 
 .brand-group {
@@ -81,7 +84,7 @@ body {
 .logo-kuhn {
     width: 60px;
     height: auto;
-    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+    filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
 }
 
 .logo-parts {
@@ -99,7 +102,7 @@ body {
     font-size: 0.85rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.75);
 }
 
 .brand-text strong {
@@ -117,31 +120,31 @@ body {
 .nav-pill {
     padding: 10px 18px;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     text-decoration: none;
-    color: var(--white);
+    color: var(--text);
     font-size: 0.9rem;
     font-weight: 500;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     backdrop-filter: blur(12px);
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .nav-pill:hover,
 .nav-pill:focus {
-    background: rgba(255, 255, 255, 0.18);
-    border-color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 .nav-pill--primary {
-    background: var(--gold);
-    color: var(--gray-dark);
-    border-color: transparent;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
     font-weight: 600;
 }
 
 .nav-pill--primary:hover {
-    background: #e5cb92;
+    background: rgba(255, 255, 255, 0.28);
 }
 
 .content {
@@ -155,39 +158,41 @@ body {
 }
 
 .glass {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    background: rgba(30, 18, 16, 0.75);
+    backdrop-filter: blur(24px);
+    border: 1px solid var(--border);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
 }
 
 .login-card {
     width: min(980px, 90%);
     display: grid;
     grid-template-columns: 1fr 1fr;
-    border-radius: 24px;
+    border-radius: 20px;
     overflow: hidden;
+    border: 1px solid var(--border-red);
 }
 
 .login-card__intro {
     padding: 48px;
-    background: linear-gradient(140deg, rgba(208, 181, 128, 0.25), rgba(73, 73, 73, 0.55));
+    background: linear-gradient(140deg, rgba(204, 0, 0, 0.2), rgba(13, 9, 7, 0.6));
     display: flex;
     flex-direction: column;
     gap: 24px;
+    border-right: 1px solid var(--border-red);
 }
 
 .login-card__intro h1 {
     font-size: 2.4rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--gold);
-    text-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
+    color: var(--red);
+    text-shadow: 0 0 30px var(--red-glow);
 }
 
 .system-name {
     font-size: 1.05rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.8);
     font-weight: 500;
 }
 
@@ -203,10 +208,9 @@ body {
     gap: 16px;
     align-items: flex-start;
     padding: 16px 18px;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
 }
 
 .feature-icon {
@@ -216,17 +220,17 @@ body {
 .features strong {
     font-size: 1.05rem;
     letter-spacing: 0.02em;
-    color: var(--white);
+    color: var(--text);
 }
 
 .features p {
     font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--muted);
 }
 
 .login-card__form {
     padding: 52px 56px;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(13, 9, 7, 0.6);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -237,7 +241,7 @@ body {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at top right, rgba(237, 28, 36, 0.35), transparent 60%);
+    background: radial-gradient(circle at top right, rgba(204, 0, 0, 0.2), transparent 60%);
     pointer-events: none;
 }
 
@@ -257,31 +261,34 @@ form {
 
 .form-group label {
     font-weight: 600;
-    font-size: 0.9rem;
-    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
+    color: var(--muted);
 }
 
 .form-group input,
 .form-group select {
     padding: 14px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(0, 0, 0, 0.25);
-    color: var(--white);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
     font-size: 1rem;
-    transition: all 0.3s ease;
+    font-family: inherit;
+    transition: all 0.25s ease;
 }
 
 .form-group input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--muted);
 }
 
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(208, 181, 128, 0.25);
+    border-color: var(--red);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 3px var(--red-glow);
 }
 
 .input-icon {
@@ -298,7 +305,7 @@ form {
 .icon-lock {
     position: absolute;
     right: 12px;
-    color: rgba(255, 255, 255, 0.65);
+    color: var(--muted);
     pointer-events: none;
 }
 
@@ -312,59 +319,65 @@ form {
 
 .login-alert.show {
     display: block;
-    border: 1px solid rgba(237, 28, 36, 0.4);
-    background: rgba(237, 28, 36, 0.15);
+    border: 1px solid rgba(204, 0, 0, 0.4);
+    background: rgba(204, 0, 0, 0.12);
     color: #ffb8bc;
 }
 
 .btn-login {
     margin-top: 12px;
     padding: 16px;
-    border-radius: 14px;
+    border-radius: 12px;
     border: none;
-    background: linear-gradient(120deg, #ED1C24, #B10F15);
-    color: var(--white);
+    background: linear-gradient(120deg, var(--red), var(--red-dark));
+    color: #fff;
+    font-family: inherit;
     font-size: 1.05rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 12px 25px rgba(237, 28, 36, 0.35);
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 24px var(--red-glow);
+    letter-spacing: 0.03em;
 }
 
 .btn-login:hover {
     transform: translateY(-2px);
-    box-shadow: 0 18px 35px rgba(237, 28, 36, 0.45);
+    box-shadow: 0 14px 32px var(--red-glow);
 }
 
 .signup-hint {
     text-align: center;
     font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--muted);
 }
 
 .signup-hint a {
-    color: var(--gold);
+    color: var(--red);
     text-decoration: none;
     font-weight: 600;
 }
 
+.signup-hint a:hover {
+    color: #ff3333;
+}
+
+/* ===== STATUS BAR ===== */
 .statusbar {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 2;
-    margin: 0;
-    padding: 12px 40px;
-    border-radius: 0;
+    z-index: 10;
+    padding: 10px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: rgba(255, 255, 255, 0.85);
-    background: #1a1a1a;
-    border-top: 2px solid #ED1C24;
+    color: var(--text);
+    background: var(--panel);
+    border-top: 1px solid var(--red);
     width: 100%;
     box-sizing: border-box;
+    height: 44px;
 }
 
 .status-left,
@@ -376,66 +389,56 @@ form {
 }
 
 .status-user-icon {
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
-    box-shadow: 0 0 15px rgba(124, 58, 237, 0.7), inset 0 0 10px rgba(255, 255, 255, 0.2);
-    position: relative;
-}
-
-.status-user-icon::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #7c3aed, #a855f7);
-    opacity: 0.5;
-    filter: blur(8px);
-    z-index: -1;
+    font-size: 15px;
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
 }
 
 .status-user-text {
-    font-size: 0.95rem;
-    color: #E8E8E8;
+    font-size: 0.85rem;
+    color: var(--muted);
 }
 
 .status-user-text strong {
-    color: white;
+    color: var(--text);
     font-weight: 600;
 }
 
 .status-badge {
-    background: #ED1C24;
+    background: var(--red);
     color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .status-date-box {
-    background: #2E3440;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    color: #E8E8E8;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    color: var(--muted);
 }
 
 .status-date-box strong {
-    color: white;
+    color: var(--text);
     font-weight: 600;
 }
 
 .status-date-box--highlight {
-    background: #ED1C24;
-    box-shadow: 0 0 12px rgba(237, 28, 36, 0.5);
+    background: var(--red);
+    border-color: var(--red);
+    box-shadow: 0 0 10px var(--red-glow);
 }
 
 .status-date-box--highlight strong {
@@ -443,13 +446,13 @@ form {
 }
 
 .status-center .divider {
-    color: #4A4A4A;
+    color: var(--border);
     font-size: 1.2rem;
 }
 
 .status-right span {
-    font-size: 0.9rem;
-    color: #E8E8E8;
+    font-size: 0.85rem;
+    color: var(--muted);
 }
 
 .status-online {
@@ -458,9 +461,9 @@ form {
 }
 
 .status-logo-small {
-    height: 20px;
+    height: 18px;
     width: auto;
-    filter: brightness(0) invert(1);
+    filter: brightness(0) invert(0.5);
 }
 
 @media (max-width: 980px) {
@@ -471,6 +474,8 @@ form {
     .login-card__intro {
         padding: 36px;
         text-align: center;
+        border-right: none;
+        border-bottom: 1px solid var(--border-red);
     }
 
     .features li {
@@ -501,8 +506,9 @@ form {
 
     .statusbar {
         flex-direction: column;
-        gap: 12px;
-        margin: 20px;
+        height: auto;
+        padding: 12px 20px;
+        gap: 8px;
         text-align: center;
     }
 
@@ -512,4 +518,3 @@ form {
         gap: 8px;
     }
 }
-

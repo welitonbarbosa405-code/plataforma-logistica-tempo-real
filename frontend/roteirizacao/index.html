@@ -74,7 +74,7 @@
             <div class="dash-grid-main">
                 <div class="dash-card dash-card-mapa">
                     <div class="dash-card-title">🗺️ Todas as Rotas — Visão Geral</div>
-                    <div id="dashMapaGeral" style="height:380px;border-radius:10px;overflow:hidden;border:1px solid #E8E8E8;"></div>
+                    <div id="dashMapaGeral" style="height:380px;border-radius:10px;overflow:hidden;border:1px solid rgba(204,0,0,0.25);"></div>
                     <div id="dashMapaLegenda" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:12px;"></div>
                 </div>
                 <div class="dash-grid-charts">
@@ -101,7 +101,7 @@
                 </div>
                 <div class="dash-card">
                     <div class="dash-card-title">🌡️ Mapa de Calor — Concentração de Colaboradores</div>
-                    <div id="dashHeatmap" style="height:280px;border-radius:10px;overflow:hidden;border:1px solid #E8E8E8;"></div>
+                    <div id="dashHeatmap" style="height:280px;border-radius:10px;overflow:hidden;border:1px solid rgba(204,0,0,0.25);"></div>
                 </div>
             </div>
             <div class="dash-card" style="margin:0 40px 20px 40px;">
@@ -114,7 +114,7 @@
                 </div>
                 <table style="width:100%;border-collapse:collapse;">
                     <thead>
-                        <tr style="background:linear-gradient(135deg,#ED1C24,#2E3440);color:white;">
+                        <tr style="background:linear-gradient(135deg,#CC0000,#990000);color:white;">
                             <th style="padding:10px 12px;text-align:left;font-size:12px;">Linha</th>
                             <th style="padding:10px 12px;text-align:left;font-size:12px;">Placa</th>
                             <th style="padding:10px 12px;text-align:left;font-size:12px;">Tipo</th>
@@ -129,7 +129,7 @@
                     </thead>
                     <tbody id="tbodyResumoExecutivo"></tbody>
                 </table>
-                <div style="font-size:11px;color:#4A4A4A;margin-top:8px;">
+                <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:8px;">
                     * Km/dia calculado pelo Google Maps (IDA + VOLTA). Custo estimado baseado em consumo médio.
                 </div>
             </div>
@@ -297,18 +297,18 @@
                 <!-- Header -->
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:16px;">
                     <div>
-                        <h2 style="color:#2E3440;font-size:22px;margin-bottom:4px;">✨ Roteirização Automática</h2>
-                        <p style="color:#4A4A4A;font-size:13px;">O sistema agrupa os colaboradores por proximidade geográfica e sugere a frota ideal automaticamente.</p>
+                        <h2 style="color:#f0ece8;font-size:22px;margin-bottom:4px;">✨ Roteirização Automática</h2>
+                        <p style="color:rgba(255,255,255,0.5);font-size:13px;">O sistema agrupa os colaboradores por proximidade geográfica e sugere a frota ideal automaticamente.</p>
                     </div>
                 </div>
 
                 <!-- Configurações -->
-                <div style="background:#F8F8F8;border:1px solid #E8E8E8;border-radius:12px;padding:20px;margin-bottom:24px;">
-                    <div style="font-weight:700;color:#2E3440;margin-bottom:16px;font-size:14px;">⚙️ Configurações</div>
+                <div style="background:#1e1210;border:1px solid rgba(204,0,0,0.25);border-radius:12px;padding:20px;margin-bottom:24px;">
+                    <div style="font-weight:700;color:#f0ece8;margin-bottom:16px;font-size:14px;">⚙️ Configurações</div>
                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;flex-wrap:wrap;">
                         <div class="form-group" style="margin-bottom:0;">
                             <label>Turno</label>
-                            <select id="autoTurno" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:0.95em;">
+                            <select id="autoTurno" style="width:100%;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.95em;background:#0d0907;color:#f0ece8;">
                                 <option value="Manhã">🌅 Manhã</option>
                                 <option value="Tarde">🌆 Tarde</option>
                                 <option value="Noite">🌙 Noite</option>
@@ -316,31 +316,31 @@
                         </div>
                         <div class="form-group" style="margin-bottom:0;">
                             <label>🌅 Horário IDA (Garagem)</label>
-                            <input type="time" id="autoHorarioIda" value="06:30" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:0.95em;">
+                            <input type="time" id="autoHorarioIda" value="06:30" style="width:100%;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.95em;background:#0d0907;color:#f0ece8;">
                         </div>
                         <div class="form-group" style="margin-bottom:0;">
                             <label>🌆 Horário VOLTA (Kuhn)</label>
-                            <input type="time" id="autoHorarioVolta" value="17:30" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:0.95em;">
+                            <input type="time" id="autoHorarioVolta" value="17:30" style="width:100%;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.95em;background:#0d0907;color:#f0ece8;">
                         </div>
                         <div class="form-group" style="margin-bottom:0;">
                             <label>Ponto de Origem</label>
-                            <input type="text" id="autoPontoOrigem" value="Passo Fundo - RS" placeholder="Ex: Rua X, 100 - Bairro" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:0.95em;">
+                            <input type="text" id="autoPontoOrigem" value="Passo Fundo - RS" placeholder="Ex: Rua X, 100 - Bairro" style="width:100%;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.95em;background:#0d0907;color:#f0ece8;">
                         </div>
                         <div class="form-group" style="margin-bottom:0;">
                             <label>Capacidade de referência</label>
-                            <select id="autoCapacidade" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:0.95em;">
+                            <select id="autoCapacidade" style="width:100%;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.95em;background:#0d0907;color:#f0ece8;">
                                 <option value="46">🚌 Ônibus (46 lugares)</option>
                                 <option value="28">🚐 Micro-ônibus (28 lugares)</option>
                                 <option value="15">🚐 Van (15 lugares)</option>
                             </select>
                         </div>
                         <div class="form-group" style="margin-bottom:0;display:flex;flex-direction:column;gap:8px;justify-content:flex-end;">
-                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:#2E3440;">
-                                <input type="checkbox" id="autoUsarGoogle" checked style="width:16px;height:16px;accent-color:#ED1C24;">
+                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:#f0ece8;">
+                                <input type="checkbox" id="autoUsarGoogle" checked style="width:16px;height:16px;accent-color:#CC0000;">
                                 🗺️ Otimizar rota via Google Maps
                             </label>
                             <button onclick="calcularRoteirizacao()"
-                                style="width:100%;padding:11px;background:linear-gradient(135deg,#ED1C24,#c0392b);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(237,28,36,0.3);">
+                                style="width:100%;padding:11px;background:linear-gradient(135deg,#CC0000,#990000);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(204,0,0,0.35);font-family:inherit;">
                                 🔍 Calcular Agrupamento
                             </button>
                         </div>
@@ -350,8 +350,8 @@
                 <!-- Loading -->
                 <div id="autoLoading" style="display:none;text-align:center;padding:40px;">
                     <div style="font-size:40px;margin-bottom:12px;">⚙️</div>
-                    <div style="font-size:16px;font-weight:700;color:#2E3440;">Calculando agrupamento...</div>
-                    <div style="font-size:13px;color:#4A4A4A;margin-top:4px;">Processando coordenadas de todos os colaboradores</div>
+                    <div style="font-size:16px;font-weight:700;color:#f0ece8;">Calculando agrupamento...</div>
+                    <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px;">Processando coordenadas de todos os colaboradores</div>
                 </div>
 
                 <!-- Resultado -->
@@ -363,27 +363,27 @@
                     <!-- Mapa dos grupos -->
                     <div class="dash-card" style="margin-bottom:24px;">
                         <div class="dash-card-title">🗺️ Mapa dos Grupos — Distribuição Geográfica</div>
-                        <div id="autoMapa" style="height:420px;border-radius:10px;overflow:hidden;border:1px solid #E8E8E8;"></div>
-                        <div id="autoMapaLegenda" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:12px;"></div>
+                        <div id="autoMapa" style="height:420px;border-radius:10px;overflow:hidden;border:1px solid rgba(204,0,0,0.25);"></div>
+                        <div id="autoMapaLegenda" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:rgba(255,255,255,0.5);"></div>
                     </div>
 
                     <!-- Cards dos grupos -->
-                    <div style="font-weight:700;color:#2E3440;font-size:16px;margin-bottom:16px;">
+                    <div style="font-weight:700;color:#f0ece8;font-size:16px;margin-bottom:16px;">
                         🚌 Grupos Sugeridos — <span id="autoTotalGrupos">0</span> linhas
                     </div>
                     <div id="autoGruposContainer" style="display:flex;flex-direction:column;gap:16px;margin-bottom:24px;"></div>
 
                     <!-- Botão Aplicar -->
-                    <div style="background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border:2px solid #10b981;border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+                    <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.35);border-radius:12px;padding:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
                         <div>
-                            <div style="font-weight:700;color:#0F6E56;font-size:15px;">✅ Pronto para aplicar!</div>
-                            <div style="font-size:13px;color:#4A4A4A;margin-top:4px;">
+                            <div style="font-weight:700;color:#10b981;font-size:15px;">✅ Pronto para aplicar!</div>
+                            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px;">
                                 O sistema vai criar os ônibus automaticamente e alocar todos os colaboradores.
-                                <strong>Atenção:</strong> as alocações existentes serão substituídas.
+                                <strong style="color:#f0ece8;">Atenção:</strong> as alocações existentes serão substituídas.
                             </div>
                         </div>
                         <button onclick="aplicarRoteirizacao()"
-                            style="padding:12px 28px;background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 4px 12px rgba(16,185,129,0.3);">
+                            style="padding:12px 28px;background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 4px 12px rgba(16,185,129,0.3);font-family:inherit;">
                             🚀 Aplicar Roteirização
                         </button>
                     </div>
@@ -434,13 +434,13 @@
                     <div class="form-row" style="grid-template-columns:1fr 2fr 1fr;gap:15px;">
                         <div class="form-group">
                             <label for="colEstado">Estado *</label>
-                            <select id="colEstado" onchange="onEstadoChange('col')" style="width:100%;padding:10px 14px;border:1px solid #D0B580;border-radius:6px;font-size:0.95em;">
+                            <select id="colEstado" onchange="onEstadoChange('col')" style="width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.95em;background:#0d0907;color:#f0ece8;">
                                 <option value="">Selecione...</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="colCidade">Cidade *</label>
-                            <select id="colCidade" onchange="onCidadeChange('col')" style="width:100%;padding:10px 14px;border:1px solid #D0B580;border-radius:6px;font-size:0.95em;" disabled>
+                            <select id="colCidade" onchange="onCidadeChange('col')" style="width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.95em;background:#0d0907;color:#f0ece8;" disabled>
                                 <option value="">Selecione o estado primeiro...</option>
                             </select>
                         </div>
@@ -463,7 +463,7 @@
                             <div style="position:relative;">
                                 <input type="text" id="colBairro" required placeholder="Digite o bairro..."
                                     autocomplete="off" oninput="onBairroInput('col')"
-                                    style="width:100%;padding:10px 14px;border:1px solid #D0B580;border-radius:6px;font-size:0.95em;">
+                                    style="width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.95em;background:#0d0907;color:#f0ece8;">
                                 <div id="colBairroDropdown" class="bairro-autocomplete-dropdown" style="display:none;"></div>
                             </div>
                         </div>
@@ -478,11 +478,11 @@
                     </div>
                     <div class="form-row" style="grid-template-columns:1fr;gap:15px;">
                         <div class="form-group">
-                            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:#F8F8F8;border:2px solid #E8E8E8;border-radius:10px;cursor:pointer;" onclick="toggleMotorista()">
-                                <input type="checkbox" id="colIsMotorista" style="width:18px;height:18px;cursor:pointer;accent-color:#ED1C24;">
+                            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;cursor:pointer;" onclick="toggleMotorista()">
+                                <input type="checkbox" id="colIsMotorista" style="width:18px;height:18px;cursor:pointer;accent-color:#CC0000;">
                                 <div>
-                                    <div style="font-weight:700;color:#2E3440;font-size:14px;">🚌 Este colaborador é motorista</div>
-                                    <div style="font-size:12px;color:#666;margin-top:2px;">Marque se este colaborador dirige um ônibus da empresa</div>
+                                    <div style="font-weight:700;color:#f0ece8;font-size:14px;">🚌 Este colaborador é motorista</div>
+                                    <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:2px;">Marque se este colaborador dirige um ônibus da empresa</div>
                                 </div>
                             </div>
                         </div>
@@ -493,7 +493,7 @@
                             <select id="colOnibusMotorista" style="width:100%;padding:10px 14px;border:2px solid #ED1C24;border-radius:8px;font-size:0.95em;">
                                 <option value="">— Selecione o ônibus —</option>
                             </select>
-                            <small style="color:#4A4A4A;">O motorista será vinculado a este ônibus no app.</small>
+                            <small style="color:rgba(255,255,255,0.45);">O motorista será vinculado a este ônibus no app.</small>
                         </div>
                     </div>
                     <div class="form-group" style="margin-bottom:12px;">
@@ -531,7 +531,7 @@
                                 <option value="Van">🚐 Van</option>
                                 <option value="Carro">🚗 Carro</option>
                             </select>
-                            <small style="color:#4A4A4A;">A capacidade será preenchida automaticamente</small>
+                            <small style="color:rgba(255,255,255,0.45);">A capacidade será preenchida automaticamente</small>
                         </div>
                         <div class="form-group">
                             <label for="busCapacidade">Capacidade *</label>
@@ -552,12 +552,12 @@
                         <div class="form-group">
                             <label for="busHorario">🌅 Horário de Saída — IDA (Garagem) *</label>
                             <input type="time" id="busHorario" required value="06:30">
-                            <small style="color:#4A4A4A;">Horário que o ônibus sai da garagem</small>
+                            <small style="color:rgba(255,255,255,0.45);">Horário que o ônibus sai da garagem</small>
                         </div>
                         <div class="form-group">
                             <label for="busHorarioVolta">🌆 Horário de Saída — VOLTA (Kuhn Brasil) *</label>
                             <input type="time" id="busHorarioVolta" required value="17:30">
-                            <small style="color:#4A4A4A;">Horário que o ônibus sai da empresa</small>
+                            <small style="color:rgba(255,255,255,0.45);">Horário que o ônibus sai da empresa</small>
                         </div>
                     </div>
                     <div class="form-group" style="margin-top:4px;">
@@ -565,13 +565,13 @@
                         <div class="form-row" style="grid-template-columns:1fr 2fr;gap:12px;margin-bottom:12px;">
                             <div class="form-group" style="margin-bottom:0;">
                                 <label for="busEstado" style="font-size:12px;">1️⃣ Estado</label>
-                                <select id="busEstado" onchange="onEstadoChange('bus')" style="width:100%;padding:8px 12px;border:1px solid #D0B580;border-radius:6px;font-size:0.9em;">
+                                <select id="busEstado" onchange="onEstadoChange('bus')" style="width:100%;padding:8px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.9em;background:#0d0907;color:#f0ece8;">
                                     <option value="">Selecione...</option>
                                 </select>
                             </div>
                             <div class="form-group" style="margin-bottom:0;">
                                 <label for="busCidadeSelect" style="font-size:12px;">2️⃣ Cidade</label>
-                                <select id="busCidadeSelect" onchange="onCidadeChange('bus')" style="width:100%;padding:8px 12px;border:1px solid #D0B580;border-radius:6px;font-size:0.9em;" disabled>
+                                <select id="busCidadeSelect" onchange="onCidadeChange('bus')" style="width:100%;padding:8px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.9em;background:#0d0907;color:#f0ece8;" disabled>
                                     <option value="">Selecione o estado primeiro...</option>
                                 </select>
                             </div>
@@ -580,14 +580,14 @@
                         <div style="display:flex;gap:8px;margin-bottom:8px;position:relative;">
                             <div style="flex:1;position:relative;">
                                 <input type="text" id="busBairroInput" placeholder="Selecione a cidade primeiro..."
-                                    style="width:100%;padding:8px 12px;border:1px solid #D0B580;border-radius:6px;font-size:0.95em;"
+                                    style="width:100%;padding:8px 12px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.95em;background:#0d0907;color:#f0ece8;"
                                     autocomplete="off" oninput="onBairroInput('bus')" disabled>
                                 <div id="busBairroDropdown" class="bairro-autocomplete-dropdown" style="display:none;"></div>
                             </div>
                             <button type="button" class="btn btn-secondary" onclick="adicionarBairroOnibus()" style="white-space:nowrap;">+ Adicionar</button>
                         </div>
                         <div id="busBairrosTags" class="bairros-tags-container"></div>
-                        <small style="color:#4A4A4A;">Selecione o estado e cidade, depois digite o bairro — o Google vai sugerir automaticamente.</small>
+                        <small style="color:rgba(255,255,255,0.45);">Selecione o estado e cidade, depois digite o bairro — o Google vai sugerir automaticamente.</small>
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary">✅ Cadastrar Ônibus</button>
@@ -616,7 +616,7 @@
                         <div class="form-group">
                             <label>Senha</label>
                             <input type="password" id="uSenha" placeholder="Mínimo 6 caracteres">
-                            <small style="color:#4A4A4A;">Deixe em branco ao editar para manter a senha atual.</small>
+                            <small style="color:rgba(255,255,255,0.45);">Deixe em branco ao editar para manter a senha atual.</small>
                         </div>
                         <div class="form-group">
                             <label>Perfil *</label>
@@ -663,18 +663,17 @@
     <div id="modalAlocar" class="modal">
         <div class="modal-content" style="max-width:480px;">
             <span class="close" onclick="fecharModalAlocar()">&times;</span>
-            <h2 style="color:#2E3440;margin-bottom:16px;">🚌 Alocar em Ônibus</h2>
-            <p id="modalAlocarNome" style="color:#4A4A4A;margin-bottom:20px;font-weight:600;font-size:1.05em;"></p>
+            <h2 style="color:#f0ece8;margin-bottom:16px;">🚌 Alocar em Ônibus</h2>
+            <p id="modalAlocarNome" style="color:rgba(255,255,255,0.7);margin-bottom:20px;font-weight:600;font-size:1.05em;"></p>
             <div class="form-group">
                 <label>Selecione o Ônibus / Linha</label>
-                <select id="modalSelectOnibus" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:6px;font-size:1em;">
+                <select id="modalSelectOnibus">
                     <option value="">— Sem ônibus —</option>
                 </select>
             </div>
             <div class="form-group" style="margin-top:10px;">
                 <label>Ordem de Embarque (opcional)</label>
-                <input type="number" id="modalOrdemEmbarque" placeholder="Ex: 1, 2, 3..." min="1"
-                    style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:6px;font-size:1em;">
+                <input type="number" id="modalOrdemEmbarque" placeholder="Ex: 1, 2, 3..." min="1">
             </div>
             <div class="form-actions" style="margin-top:20px;">
                 <button class="btn btn-primary" onclick="confirmarAlocacao()">✅ Confirmar Alocação</button>
@@ -786,37 +785,37 @@
             const corBarra = perc > 95 ? '#ED1C24' : perc > 75 ? '#f59e0b' : '#10b981';
 
             const colabsHTML = grupo.colaboradores.map((c, j) => `
-                <div style="display:flex;align-items:center;gap:6px;background:#F8F8F8;border:1px solid #E8E8E8;padding:4px 8px;border-radius:8px;font-size:11px;">
-                    <span style="color:#999;min-width:18px;">${j+1}.</span>
-                    <span style="flex:1;color:#2E3440;font-weight:500;">${c.nome.split(' ')[0]} ${c.nome.split(' ').slice(-1)[0]}</span>
-                    ${c.bairro ? `<span style="color:#666;font-size:10px;">— ${c.bairro}</span>` : ''}
+                <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);padding:4px 8px;border-radius:8px;font-size:11px;">
+                    <span style="color:rgba(255,255,255,0.35);min-width:18px;">${j+1}.</span>
+                    <span style="flex:1;color:#f0ece8;font-weight:500;">${c.nome.split(' ')[0]} ${c.nome.split(' ').slice(-1)[0]}</span>
+                    ${c.bairro ? `<span style="color:rgba(255,255,255,0.4);font-size:10px;">— ${c.bairro}</span>` : ''}
                     <button onclick="moverColaborador(${i}, ${j})"
                         title="Mover para outro grupo"
-                        style="background:none;border:1px solid #D0B580;border-radius:6px;padding:2px 6px;cursor:pointer;font-size:11px;color:#4A4A4A;white-space:nowrap;">
+                        style="background:none;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:2px 6px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.5);white-space:nowrap;font-family:inherit;">
                         🔀 Mover
                     </button>
                 </div>`).join('');
 
             container.innerHTML += `
-                <div id="grupo-card-${i}" style="background:#FAFAFA;border:1px solid #E8E8E8;border-left:5px solid ${cor};border-radius:10px;padding:16px;">
+                <div id="grupo-card-${i}" style="background:#1e1210;border:1px solid rgba(255,255,255,0.07);border-left:4px solid ${cor};border-radius:10px;padding:16px;">
                     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
                         <div style="display:flex;align-items:center;gap:10px;">
-                            <div style="width:14px;height:14px;border-radius:50%;background:${cor};flex-shrink:0;"></div>
-                            <strong style="font-size:15px;color:#2E3440;">Grupo ${i+1}</strong>
+                            <div style="width:12px;height:12px;border-radius:50%;background:${cor};flex-shrink:0;"></div>
+                            <strong style="font-size:15px;color:#f0ece8;">Grupo ${i+1}</strong>
                             <span id="badge-${i}" style="background:${cor};color:white;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">${grupo.colaboradores.length} pessoas</span>
-                                ${grupo.distancia_km ? `<span style="background:#EEF2FF;color:#4338ca;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">📏 ${grupo.distancia_km} km</span>` : ''}
-                                ${grupo.duracao_min ? `<span style="background:#F0FDF4;color:#166534;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">⏱️ ${grupo.duracao_min} min</span>` : ''}
+                                ${grupo.distancia_km ? `<span style="background:rgba(67,56,202,0.2);color:#818cf8;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">📏 ${grupo.distancia_km} km</span>` : ''}
+                                ${grupo.duracao_min ? `<span style="background:rgba(16,185,129,0.15);color:#10b981;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;">⏱️ ${grupo.duracao_min} min</span>` : ''}
                         </div>
                         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                             <div style="display:flex;align-items:center;gap:6px;">
-                                <div style="width:80px;height:8px;background:#E8E8E8;border-radius:4px;overflow:hidden;">
+                                <div style="width:80px;height:6px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
                                     <div style="width:${Math.min(perc,100)}%;height:100%;background:${corBarra};border-radius:4px;"></div>
                                 </div>
                                 <span id="perc-${i}" style="font-size:11px;color:${corBarra};font-weight:700;">${perc}%</span>
                             </div>
                             <span style="font-size:18px;">${s.icon}</span>
-                            <strong style="color:#2E3440;">${s.tipo}</strong>
-                            <span style="font-size:11px;color:#666;">(${s.capacidade} lugares)</span>
+                            <strong style="color:#f0ece8;">${s.tipo}</strong>
+                            <span style="font-size:11px;color:rgba(255,255,255,0.4);">(${s.capacidade} lugares)</span>
                         </div>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;">
@@ -843,25 +842,25 @@
         modalDiv.id = 'modalMover';
         modalDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;';
         modalDiv.innerHTML = `
-            <div style="background:white;border-radius:14px;padding:28px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-                <h3 style="color:#2E3440;margin-bottom:6px;">🔀 Mover Colaborador</h3>
-                <p style="color:#4A4A4A;font-size:13px;margin-bottom:20px;">
-                    <strong>${colab.nome}</strong><br>
-                    <span style="color:#666;">${colab.bairro || ''}</span>
+            <div style="background:#1e1210;border:1px solid rgba(204,0,0,0.3);border-radius:14px;padding:28px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+                <h3 style="color:#f0ece8;margin-bottom:6px;">🔀 Mover Colaborador</h3>
+                <p style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:20px;">
+                    <strong style="color:#f0ece8;">${colab.nome}</strong><br>
+                    <span>${colab.bairro || ''}</span>
                 </p>
                 <div style="margin-bottom:16px;">
-                    <label style="font-size:13px;font-weight:600;color:#2E3440;display:block;margin-bottom:6px;">Mover para qual grupo?</label>
-                    <select id="selectGrupoDestino" style="width:100%;padding:10px;border:1px solid #D0B580;border-radius:8px;font-size:14px;">
+                    <label style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.6);display:block;margin-bottom:6px;">Mover para qual grupo?</label>
+                    <select id="selectGrupoDestino" style="width:100%;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:14px;background:#0d0907;color:#f0ece8;font-family:inherit;">
                         ${opcoes}
                     </select>
                 </div>
                 <div style="display:flex;gap:10px;">
                     <button onclick="confirmarMover(${grupoIdx}, ${colabIdx})"
-                        style="flex:1;padding:10px;background:linear-gradient(135deg,#ED1C24,#c0392b);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">
+                        style="flex:1;padding:10px;background:linear-gradient(135deg,#CC0000,#990000);color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">
                         ✅ Confirmar
                     </button>
                     <button onclick="document.getElementById('modalMover').remove()"
-                        style="flex:1;padding:10px;background:#F0F0F0;color:#2E3440;border:none;border-radius:8px;font-size:14px;cursor:pointer;">
+                        style="flex:1;padding:10px;background:rgba(255,255,255,0.06);color:#f0ece8;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">
                         Cancelar
                     </button>
                 </div>

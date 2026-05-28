@@ -127,9 +127,25 @@ def init_database():
             integracao TEXT, placa TEXT, transportadora TEXT, numero_coleta TEXT,
             empresa TEXT, solicitante TEXT, vigilante TEXT,
             data_entrada TEXT, hora_entrada TEXT, data_saida TEXT, hora_saida TEXT,
+            status TEXT DEFAULT 'aguardando',
+            doca TEXT,
+            observacao_autorizacao TEXT,
+            autorizado_por TEXT,
+            autorizado_em TEXT,
             FOREIGN KEY (cpf) REFERENCES cadastro(cpf)
         )
     ''')
+    for col_def in [
+        "status TEXT DEFAULT 'aguardando'",
+        'doca TEXT',
+        'observacao_autorizacao TEXT',
+        'autorizado_por TEXT',
+        'autorizado_em TEXT',
+    ]:
+        try:
+            cursor.execute(f'ALTER TABLE cadastro_entrada ADD COLUMN {col_def}')
+        except sqlite3.OperationalError:
+            pass
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS janela (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

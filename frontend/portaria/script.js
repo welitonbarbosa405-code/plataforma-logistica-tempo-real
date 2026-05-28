@@ -26,35 +26,36 @@ function formatarDataHoraLogin(isoString) {
 }
 
 function atualizarCabecalhoUsuario() {
-    // Atualizar rodapé - informações do usuário
-    const footerEmail = document.getElementById('footerUsuarioEmail');
+    const perfil = (usuarioLogado?.perfil || 'visitante').toLowerCase();
+    const perfilMap = {
+        'administrador': 'ADMINISTRADOR',
+        'supervisor': 'SUPERVISOR',
+        'porteiro': 'PORTEIRO',
+        'visitante': 'VISITANTE'
+    };
+    const perfilLabel = perfilMap[perfil] || perfil.toUpperCase();
+    const nomeLabel   = usuarioLogado?.nome || usuarioLogado?.email || '--';
+
+    // Rodapé
+    const footerEmail  = document.getElementById('footerUsuarioEmail');
     const footerPerfil = document.getElementById('footerUsuarioPerfil');
-    const btnUsuarios = document.getElementById('btnUsuarios');
-    
-    if (footerEmail) {
-        footerEmail.textContent = usuarioLogado?.email || '--';
-    }
-    
-    if (footerPerfil) {
-        const perfil = usuarioLogado?.perfil || 'visitante';
-        // Mapear perfis para texto completo
-        const perfilMap = {
-            'administrador': 'ADMINISTRADOR',
-            'supervisor': 'SUPERVISOR',
-            'porteiro': 'PORTEIRO',
-            'visitante': 'VISITANTE'
-        };
-        footerPerfil.textContent = perfilMap[perfil.toLowerCase()] || perfil.toUpperCase();
-    }
-    
+    if (footerEmail)  footerEmail.textContent  = usuarioLogado?.email || '--';
+    if (footerPerfil) footerPerfil.textContent = perfilLabel;
+
+    // Sidebar — avatar e nome
+    const sidebarName = document.getElementById('sidebarUserName');
+    const sidebarRole = document.getElementById('sidebarUserRole');
+    if (sidebarName) sidebarName.textContent = nomeLabel;
+    if (sidebarRole) sidebarRole.textContent = perfilLabel;
+
+    // Topbar — pill de usuário
+    const headerPill = document.getElementById('headerUserPill');
+    if (headerPill) headerPill.textContent = nomeLabel;
+
     // Mostrar botão de Usuários apenas para administradores
+    const btnUsuarios = document.getElementById('btnUsuarios');
     if (btnUsuarios) {
-        const perfil = usuarioLogado?.perfil || 'visitante';
-        if (perfil.toLowerCase() === 'administrador') {
-            btnUsuarios.style.display = 'inline-block';
-        } else {
-            btnUsuarios.style.display = 'none';
-        }
+        btnUsuarios.style.display = perfil === 'administrador' ? 'flex' : 'none';
     }
 }
 
@@ -99,6 +100,18 @@ if (btnLogout) {
 }
 
 // ========== FUNÇÕES DE ABA ==========
+function toggleFormPanel(name) {
+    const panel = document.getElementById('formPanel' + name.charAt(0).toUpperCase() + name.slice(1));
+    if (!panel) return;
+    const isVisible = panel.style.display !== 'none';
+    panel.style.display = isVisible ? 'none' : 'block';
+    if (!isVisible) {
+        // focar no primeiro input ao abrir
+        const firstInput = panel.querySelector('input, select');
+        if (firstInput) setTimeout(() => firstInput.focus(), 50);
+    }
+}
+
 function openTab(tabName, eventElement) {
     const tabs = document.getElementsByClassName('tab-content');
     for (let i = 0; i < tabs.length; i++) {
@@ -194,6 +207,7 @@ document.getElementById('formCadastro').addEventListener('submit', async (e) => 
         if (response.ok) {
             mostrarMensagem('Cadastro realizado com sucesso!', 'success');
             limparFormCadastro();
+            toggleFormPanel('cadastro');
             carregarCadastros();
         } else {
             mostrarMensagem(data.error || 'Erro ao cadastrar', 'error');
@@ -241,6 +255,9 @@ async function editarCadastro(cpf) {
     try {
         const response = await fetch(`${API_URL}/cadastros/${cpf}`);
         const cadastro = await response.json();
+
+        const panel = document.getElementById('formPanelCadastro');
+        if (panel && panel.style.display === 'none') toggleFormPanel('cadastro');
 
         document.getElementById('cpf').value = formatarCPF(cadastro.cpf);
         document.getElementById('cpf').disabled = true;
@@ -377,8 +394,9 @@ document.getElementById('formEntrada').addEventListener('submit', async (e) => {
         if (response.ok) {
             mostrarMensagem('Entrada registrada com sucesso!', 'success');
             limparFormEntrada();
+            toggleFormPanel('entrada');
             carregarEntradas();
-            
+
             // Mostrar modal para imprimir ticket
             mostrarModalImprimirTicket(data.id, formData.nome);
         } else {
@@ -444,7 +462,7 @@ function imprimirTicket() {
     if (entradaId) {
         // Fazer download do documento Word
         window.open(`${API_URL}/entradas/${entradaId}/ticket`, '_blank');
-        mostrarMensagem('Ticket gerado com sucesso! O download iniciará automaticamente.', 'success');
+        mostrarMensagem('Ticket PDF gerado com sucesso! O download iniciará automaticamente.', 'success');
     }
     
     fecharModalImprimirTicket();
@@ -545,6 +563,55 @@ function fecharModalCadastroRapido() {
     document.getElementById('formCadastroRapido').reset();
 }
 
+// ========== MODAL DE AUTORIZAÇÃO ==========
+let _autorizarId = null;
+
+async function abrirModalAutorizar(id) {
+    _autorizarId = id;
+    try {
+        const res = await fetch(`${API_URL}/entradas/${id}`);
+        const entrada = await res.json();
+        document.getElementById('modalAutorizarInfo').textContent =
+            `Ticket #${id} — ${entrada.nome || ''} | Placa: ${entrada.placa || '-'} | ${entrada.tipo || '-'}`;
+    } catch (_) {
+        document.getElementById('modalAutorizarInfo').textContent = `Ticket #${id}`;
+    }
+    document.getElementById('autorizarDoca').value = '';
+    document.getElementById('autorizarObs').value = '';
+    document.getElementById('autorizarResponsavel').value = usuarioLogado?.nome || '';
+    document.getElementById('modalAutorizar').style.display = 'flex';
+}
+
+function fecharModalAutorizar() {
+    document.getElementById('modalAutorizar').style.display = 'none';
+    _autorizarId = null;
+}
+
+async function confirmarAutorizacao(status) {
+    if (!_autorizarId) return;
+    const doca        = document.getElementById('autorizarDoca').value.trim();
+    const observacao  = document.getElementById('autorizarObs').value.trim();
+    const responsavel = document.getElementById('autorizarResponsavel').value.trim();
+
+    try {
+        const res = await fetch(`${API_URL}/entradas/${_autorizarId}/autorizar`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status, doca, observacao, autorizado_por: responsavel })
+        });
+        if (res.ok) {
+            mostrarMensagem(status === 'autorizado' ? '✅ Entrada autorizada!' : '❌ Entrada recusada.', status === 'autorizado' ? 'success' : 'error');
+            fecharModalAutorizar();
+            carregarEntradas();
+        } else {
+            const data = await res.json();
+            mostrarMensagem(data.error || 'Erro ao processar', 'error');
+        }
+    } catch (e) {
+        mostrarMensagem('Erro ao conectar com o servidor', 'error');
+    }
+}
+
 // Cadastro rápido
 document.getElementById('formCadastroRapido').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -608,9 +675,15 @@ async function carregarEntradas() {
 
         entradas.forEach(entrada => {
             const tr = document.createElement('tr');
-            const status = entrada.data_saida ? 'status-saida' : 'status-entrada';
-            const statusTexto = entrada.data_saida ? 'Saída' : 'Entrada';
-            
+
+            // Badge de autorização
+            const autStatus = entrada.status || 'aguardando';
+            const autBadge = {
+                aguardando: `<span class="status-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);font-weight:700;">⏳ Aguardando</span>`,
+                autorizado: `<span class="status-badge" style="background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3);font-weight:700;">✅ Autorizado</span>`,
+                recusado:   `<span class="status-badge" style="background:rgba(204,0,0,0.15);color:#f87171;border:1px solid rgba(204,0,0,0.3);font-weight:700;">❌ Recusado</span>`,
+            }[autStatus] || '';
+
             tr.innerHTML = `
                 <td>${entrada.id}</td>
                 <td>${formatarData(entrada.data)}</td>
@@ -627,9 +700,9 @@ async function carregarEntradas() {
                     </span>
                 </td>
                 <td>
-                    ${entrada.data_saida ? 
-                        `<span class="status-badge status-saida">${formatarDataHora(entrada.data_saida, entrada.hora_saida)}</span>` : 
-                        '<span class="status-badge" style="background: #D0B580; color: #2E3440; font-weight: 700;">Aguardando</span>'
+                    ${entrada.data_saida ?
+                        `<span class="status-badge status-saida">${formatarDataHora(entrada.data_saida, entrada.hora_saida)}</span>` :
+                        autBadge
                     }
                 </td>
                 <td>
@@ -638,9 +711,11 @@ async function carregarEntradas() {
                 <td>
                     <div class="action-buttons">
                         <button class="btn btn-info" onclick="imprimirTicketExistente(${entrada.id})" title="Imprimir Ticket">🖨️</button>
-                        ${!entrada.data_saida ? 
-                            `<button class="btn btn-success" onclick="registrarSaida(${entrada.id})">Registrar Saída</button>` : 
-                            ''
+                        ${!entrada.data_saida && autStatus === 'autorizado' ?
+                            `<button class="btn btn-success" onclick="registrarSaida(${entrada.id})">Registrar Saída</button>` : ''
+                        }
+                        ${!entrada.data_saida && autStatus !== 'autorizado' ?
+                            `<button class="btn" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);color:#10b981;border-radius:6px;padding:5px 10px;cursor:pointer;font-size:0.8rem;" onclick="abrirModalAutorizar(${entrada.id})">🔓 Autorizar</button>` : ''
                         }
                         <button class="btn btn-warning" onclick="editarEntrada(${entrada.id})">Editar</button>
                         <button class="btn btn-danger" onclick="deletarEntrada(${entrada.id})">Excluir</button>
@@ -692,7 +767,10 @@ async function editarEntrada(id) {
         const response = await fetch(`${API_URL}/entradas/${id}`);
         const entrada = await response.json();
 
-        // Preencher formulário
+        // Abrir painel se fechado e preencher formulário
+        const panelE = document.getElementById('formPanelEntrada');
+        if (panelE && panelE.style.display === 'none') toggleFormPanel('entrada');
+
         document.getElementById('cpfEntrada').value = formatarCPF(entrada.cpf);
         document.getElementById('nomeEntrada').value = entrada.nome;
         document.getElementById('telefoneEntrada').value = formatarTelefone(entrada.telefone);
@@ -994,6 +1072,7 @@ document.getElementById('formJanela').addEventListener('submit', async (e) => {
         if (response.ok) {
             mostrarMensagem(janelaId ? 'Janela atualizada com sucesso!' : 'Janela cadastrada com sucesso!', 'success');
             limparFormJanela();
+            toggleFormPanel('janela');
             carregarJanelas();
         } else {
             mostrarMensagem(data.error || 'Erro ao cadastrar janela', 'error');
@@ -1010,18 +1089,19 @@ async function editarJanela(id) {
         const janela = await response.json();
         
         if (response.ok) {
+            const panelJ = document.getElementById('formPanelJanela');
+            if (panelJ && panelJ.style.display === 'none') toggleFormPanel('janela');
+
             document.getElementById('filial').value = janela.filial || '';
             document.getElementById('transportadoraJanela').value = janela.transportadora || '';
             document.getElementById('diaSemana').value = janela.dia_semana || '';
             document.getElementById('horario').value = janela.horario || '';
             document.getElementById('tipoJanela').value = janela.tipo || 'Coleta';
-            
+
             document.getElementById('formJanela').dataset.editId = id;
-            
+
             const submitBtn = document.querySelector('#formJanela button[type="submit"]');
             submitBtn.textContent = '✅ Atualizar';
-            
-            document.getElementById('janela').scrollIntoView({ behavior: 'smooth' });
         }
     } catch (error) {
         console.error('Erro ao carregar janela:', error);
@@ -1210,27 +1290,30 @@ async function carregarGraficoEntradasHorario() {
                 datasets: [{
                     label: 'Entradas',
                     data: data.quantidades || [],
-                    borderColor: '#ED1C24',
-                    backgroundColor: 'rgba(237, 28, 36, 0.1)',
-                    borderWidth: 3,
+                    borderColor: '#CC0000',
+                    backgroundColor: 'rgba(204, 0, 0, 0.12)',
+                    borderWidth: 2,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointBackgroundColor: '#CC0000',
+                    pointRadius: 3
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
                 plugins: {
-                    legend: {
-                        display: false
-                    }
+                    legend: { display: false }
                 },
                 scales: {
+                    x: {
+                        ticks: { color: 'rgba(240,236,232,0.6)', font: { size: 11 } },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    },
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
+                        ticks: { stepSize: 1, color: 'rgba(240,236,232,0.6)', font: { size: 11 } },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
                     }
                 }
             }
@@ -1259,25 +1342,27 @@ async function carregarGraficoEntradasTransportadora() {
                 datasets: [{
                     label: 'Entradas',
                     data: data.quantidades || [],
-                    backgroundColor: '#D0B580',
-                    borderColor: '#ED1C24',
-                    borderWidth: 2
+                    backgroundColor: 'rgba(204,0,0,0.75)',
+                    borderColor: '#CC0000',
+                    borderWidth: 1,
+                    borderRadius: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
                 plugins: {
-                    legend: {
-                        display: false
-                    }
+                    legend: { display: false }
                 },
                 scales: {
+                    x: {
+                        ticks: { color: 'rgba(240,236,232,0.6)', font: { size: 11 } },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    },
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
+                        ticks: { stepSize: 1, color: 'rgba(240,236,232,0.6)', font: { size: 11 } },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
                     }
                 }
             }
@@ -1306,25 +1391,27 @@ async function carregarGraficoEntradasDiaSemana() {
                 datasets: [{
                     label: 'Entradas',
                     data: data.quantidades || [],
-                    backgroundColor: '#2E3440',
-                    borderColor: '#ED1C24',
-                    borderWidth: 2
+                    backgroundColor: 'rgba(204,0,0,0.75)',
+                    borderColor: '#CC0000',
+                    borderWidth: 1,
+                    borderRadius: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
                 plugins: {
-                    legend: {
-                        display: false
-                    }
+                    legend: { display: false }
                 },
                 scales: {
+                    x: {
+                        ticks: { color: 'rgba(240,236,232,0.6)', font: { size: 11 } },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    },
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
+                        ticks: { stepSize: 1, color: 'rgba(240,236,232,0.6)', font: { size: 11 } },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
                     }
                 }
             }
@@ -1346,8 +1433,8 @@ async function carregarGraficoTempoPermanencia() {
             charts.tempoPermanencia.destroy();
         }
         
-        const cores = ['#10b981', '#3b82f6', '#f59e0b'];
-        
+        const cores = ['#CC0000', '#3b82f6', '#10b981'];
+
         charts.tempoPermanencia = new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -1355,7 +1442,7 @@ async function carregarGraficoTempoPermanencia() {
                 datasets: [{
                     data: data.quantidades || [],
                     backgroundColor: cores,
-                    borderColor: '#FFFFFF',
+                    borderColor: '#1e1210',
                     borderWidth: 3
                 }]
             },
@@ -1364,7 +1451,12 @@ async function carregarGraficoTempoPermanencia() {
                 maintainAspectRatio: true,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            color: 'rgba(240,236,232,0.75)',
+                            font: { size: 12 },
+                            padding: 16
+                        }
                     }
                 }
             }
