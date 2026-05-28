@@ -37,6 +37,10 @@ def init_db():
     conn.close()
 
 
+# Inicializa o banco ao importar o módulo (funciona com gunicorn)
+init_db()
+
+
 # ──────────────────────────────────────────
 # SYNC — recebe dados do sistema local
 # ──────────────────────────────────────────
